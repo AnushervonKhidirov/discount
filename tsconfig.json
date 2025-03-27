@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    // Environment setup & latest features
+    "lib": ["esnext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+
+    // Bundler mode
+    "strict": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // Best practices
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+
+    "paths": {}
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "discount",
+  "module": "src/server.ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/server.ts",
+    "start": "bun src/server.ts",
+    "build": "bun build ./src/* --outdir ./build"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "cors": "^2.8.5",
+    "elysia": "^1.2.25",
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.8",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/winston": "^2.4.4",
+    "prisma": "^6.5.0",
+    "typescript": "^5.8.2"
+  }
+}
