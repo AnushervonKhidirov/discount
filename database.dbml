@@ -4,6 +4,7 @@ Table users {
   password varchar [not null]
   created_at timestamp
   updated_at timestamp
+  role user_roles
 }
 
 Table companies {
@@ -38,4 +39,16 @@ Table discounts {
   updated_at timestamp
   archive bool [note: 'default false']
   company_id int [ref: > companies.id, not null]
+}
+
+Table rating {
+  user_id int [ref: > users.id,not null]
+  company_id int [ref: > companies.id, not null]
+  value int [not null, note: 'from 0 to 5']
+  comments text
+}
+
+enum user_roles {
+  user
+  company_owner
 }
