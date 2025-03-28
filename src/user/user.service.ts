@@ -5,7 +5,7 @@ import type { UpdateUserDto } from './dto/update-user.dto';
 
 import { PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
-import { NotFoundException, ConflictException } from '@exception';
+import { NotFoundException, ConflictException, ForbiddenException } from '@exception';
 
 export class UserService {
   private readonly repository = new PrismaClient().user;
@@ -71,11 +71,13 @@ export class UserService {
 
   async delete(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [_, err] = await this.findOne({ id });
+      const [user, err] = await this.findOne({ id });
       if (err) throw err;
 
-      const user = await this.repository.delete({ where: { id }, omit: { password: true } });
-      return [user, null];
+      if (user.role === 'SUPER_ADMIN') throw new ForbiddenException();
+
+      const deletedUser = await this.repository.delete({ where: { id }, omit: { password: true } });
+      return [deletedUser, null];
     } catch (err) {
       return exceptionHelper(err, true);
     }

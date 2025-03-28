@@ -3,7 +3,6 @@ import Elysia, { t } from 'elysia';
 import { UserService } from './user.service';
 import { updateUserBody } from './dto/update-user.dto';
 import { authMiddleware } from '../common/middleware/auth.middleware';
-import { ForbiddenException } from '@exception';
 
 export const UserRouter = new Elysia({ prefix: 'users' });
 const userService = new UserService();
@@ -35,11 +34,6 @@ UserRouter.use(authMiddleware).patch(
 );
 
 UserRouter.use(authMiddleware).delete('/', async ({ store, error }) => {
-  if (store.role === 'SUPER_ADMIN') {
-    const exception = new ForbiddenException();
-    throw error(exception.status, { ...exception });
-  }
-
   const [user, err] = await userService.delete(store.userId);
   if (err) throw error(err.status, { ...err });
   return user;
