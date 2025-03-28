@@ -25,6 +25,11 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
 
-    "paths": {}
+    "paths": {
+      "@helper/*": ["./src/common/helper/*"],
+      "@config/*": ["./src/config/*"],
+      "@exception": ["./src/common/exception/exception"],
+      "@type/*": ["./src/common/type/*"]
+    }
   }
 }
