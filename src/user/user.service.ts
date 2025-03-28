@@ -5,14 +5,17 @@ import type { UpdateUserDto } from './dto/update-user.dto';
 
 import { PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
-import { NotFoundException, ConflictException } from '@exception';
+import { NotFoundException, ConflictException, ForbiddenException } from '@exception';
 
 export class UserService {
   private readonly repository = new PrismaClient().user;
 
-  async findOne(where: Prisma.UserWhereUniqueInput): ReturnPromiseWithErr<Omit<User, 'password'>> {
+  async findOne<T extends boolean>(
+    where: Prisma.UserWhereUniqueInput,
+    withPassword?: T,
+  ): ReturnPromiseWithErr<T extends true ? User : Omit<User, 'password'>> {
     try {
-      const user = await this.repository.findUnique({ where, omit: { password: true } });
+      const user = await this.repository.findUnique({ where, omit: { password: !withPassword } });
       if (!user) throw new NotFoundException('User not found');
       return [user, null];
     } catch (err) {
@@ -51,7 +54,15 @@ export class UserService {
       const [_, err] = await this.findOne({ id });
       if (err) throw err;
 
-      const user = await this.repository.update({ data: updateUserDto, where: { id } });
+      if (updateUserDto.password) {
+        updateUserDto.password = await Bun.password.hash(updateUserDto.password, 'bcrypt');
+      }
+
+      const user = await this.repository.update({
+        data: updateUserDto,
+        where: { id },
+        omit: { password: true },
+      });
       return [user, null];
     } catch (err) {
       return exceptionHelper(err, true);
@@ -60,11 +71,13 @@ export class UserService {
 
   async delete(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [_, err] = await this.findOne({ id });
+      const [user, err] = await this.findOne({ id });
       if (err) throw err;
 
-      const user = await this.repository.delete({ where: { id } });
-      return [user, null];
+      if (user.role === 'SUPER_ADMIN') throw new ForbiddenException();
+
+      const deletedUser = await this.repository.delete({ where: { id }, omit: { password: true } });
+      return [deletedUser, null];
     } catch (err) {
       return exceptionHelper(err, true);
     }
