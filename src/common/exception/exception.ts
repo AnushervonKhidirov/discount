@@ -4,6 +4,7 @@ import { BadRequestException } from './bad-request.exception';
 import { UnauthorizedException } from './unauthorized.exception';
 import { InternalServerErrorException } from './internal-server-error.exception';
 import { ConflictException } from './conflict.exception';
+import { ForbiddenException } from './forbidden.exception';
 
 export type ExceptionMessage = string | string[];
 
@@ -14,4 +15,5 @@ export {
   UnauthorizedException,
   InternalServerErrorException,
   ConflictException,
+  ForbiddenException,
 };
