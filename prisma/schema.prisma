@@ -21,10 +21,10 @@ model User {
 }
 
 model Token {
-  refreshToken String   @id @unique @map("refresh_token")
+  refreshToken String   @id @unique @map("refresh_token") @db.VarChar(255)
   userId       Int      @map("user_id")
   expiredAt    DateTime @map("expired_at") @db.Timestamp(0)
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("tokens")
 }
