@@ -10,9 +10,12 @@ import { NotFoundException, ConflictException } from '@exception';
 export class UserService {
   private readonly repository = new PrismaClient().user;
 
-  async findOne(where: Prisma.UserWhereUniqueInput): ReturnPromiseWithErr<Omit<User, 'password'>> {
+  async findOne<T extends boolean>(
+    where: Prisma.UserWhereUniqueInput,
+    withPassword?: T,
+  ): ReturnPromiseWithErr<T extends true ? User : Omit<User, 'password'>> {
     try {
-      const user = await this.repository.findUnique({ where, omit: { password: true } });
+      const user = await this.repository.findUnique({ where, omit: { password: !withPassword } });
       if (!user) throw new NotFoundException('User not found');
       return [user, null];
     } catch (err) {
