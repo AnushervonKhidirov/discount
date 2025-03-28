@@ -4,7 +4,7 @@ Table users {
   password varchar [not null]
   created_at timestamp
   updated_at timestamp
-  role user_roles
+  role roles
 }
 
 Table companies {
@@ -55,7 +55,7 @@ Table cashbacks {
 }
 
 Table rating {
-  user_id int [ref: > users.id,not null]
+  user_id int [ref: > users.id, not null]
   company_id int [ref: > companies.id, not null]
   value int [not null, note: 'from 0 to 5']
   comments text
@@ -64,12 +64,18 @@ Table rating {
 Table banks {
   id int [primary key]
   name varchar [not null]
-  logo_url varchar [note: 'path to company logo image', not null]
+  logo_url varchar [note: 'path to bank logo image', not null]
   created_at timestamp
   updated_at timestamp
 }
 
-enum user_roles {
-  user
-  company_owner
+Table employees {
+  user_id int [ref: > users.id, not null]
+  company_id int [ref: > companies.id, not null]
+}
+
+enum roles {
+  USER
+  ADMIN
+  SUPER_ADMIN
 }
