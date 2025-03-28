@@ -54,7 +54,15 @@ export class UserService {
       const [_, err] = await this.findOne({ id });
       if (err) throw err;
 
-      const user = await this.repository.update({ data: updateUserDto, where: { id } });
+      if (updateUserDto.password) {
+        updateUserDto.password = await Bun.password.hash(updateUserDto.password, 'bcrypt');
+      }
+
+      const user = await this.repository.update({
+        data: updateUserDto,
+        where: { id },
+        omit: { password: true },
+      });
       return [user, null];
     } catch (err) {
       return exceptionHelper(err, true);
@@ -66,7 +74,7 @@ export class UserService {
       const [_, err] = await this.findOne({ id });
       if (err) throw err;
 
-      const user = await this.repository.delete({ where: { id } });
+      const user = await this.repository.delete({ where: { id }, omit: { password: true } });
       return [user, null];
     } catch (err) {
       return exceptionHelper(err, true);
