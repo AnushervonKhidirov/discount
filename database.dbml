@@ -41,11 +41,32 @@ Table discounts {
   company_id int [ref: > companies.id, not null]
 }
 
+Table cashbacks {
+  id int [primary key]
+  size int [not null, note: 'from 0 to 100 (default 0)']
+  about text
+  start_at date [not null]
+  end_at date [not null]
+  created_at timestamp
+  updated_at timestamp
+  archive bool [note: 'default false']
+  company_id int [ref: > companies.id, not null]
+  bank_id int [ref: > banks.id, not null]
+}
+
 Table rating {
   user_id int [ref: > users.id,not null]
   company_id int [ref: > companies.id, not null]
   value int [not null, note: 'from 0 to 5']
   comments text
+}
+
+Table banks {
+  id int [primary key]
+  name varchar [not null]
+  logo_url varchar [note: 'path to company logo image', not null]
+  created_at timestamp
+  updated_at timestamp
 }
 
 enum user_roles {
