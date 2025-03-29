@@ -28,6 +28,7 @@
     "paths": {
       "@helper/*": ["./src/common/helper/*"],
       "@config/*": ["./src/config/*"],
+      "@middleware/*": ["./src/common/middleware/*"],
       "@exception": ["./src/common/exception/exception"],
       "@type/*": ["./src/common/type/*"]
     }

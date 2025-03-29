@@ -1,8 +1,8 @@
 import Elysia, { t } from 'elysia';
-
+import { authMiddleware } from '@middleware/auth.middleware';
+import { roleMiddleware } from '@middleware/role-middleware';
 import { UserService } from './user.service';
 import { updateUserBody } from './dto/update-user.dto';
-import { authMiddleware } from '../common/middleware/auth.middleware';
 
 export const UserRouter = new Elysia({ prefix: 'users' });
 const userService = new UserService();
@@ -33,7 +33,7 @@ UserRouter.use(authMiddleware).patch(
   { body: updateUserBody },
 );
 
-UserRouter.use(authMiddleware).delete('/', async ({ store, error }) => {
+UserRouter.use(roleMiddleware(['USER', 'ADMIN'])).delete('/', async ({ store, error }) => {
   const [user, err] = await userService.delete(store.userId);
   if (err) throw error(err.status, { ...err });
   return user;
