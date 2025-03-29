@@ -18,11 +18,11 @@ Table companies {
   name varchar [not null]
   about text
   logo_url varchar [note: 'path to company logo image']
+  verified bool [not null, note: 'default false']
+  archived bool [not null, note: 'default false']
+  user_id int [ref: > users.id, not null]
   created_at timestamp
   updated_at timestamp
-  verified bool [not null, note: 'default false']
-  archived bool [note: 'default false']
-  user_id int [ref: > users.id, not null]
 }
 
 Table stores {
@@ -31,10 +31,10 @@ Table stores {
   longitude float [not null]
   open_at time
   close_at time
+  archived bool [not null, note: 'default false']
+  company_id int [ref: > companies.id, not null]
   created_at timestamp
   updated_at timestamp
-  archived bool [note: 'default false']
-  company_id int [ref: > companies.id, not null]
 }
 
 Table discounts {
@@ -43,10 +43,10 @@ Table discounts {
   about text
   start_at date [not null]
   end_at date [not null]
+  archived bool [not null, note: 'default false']
+  company_id int [ref: > companies.id, not null]
   created_at timestamp
   updated_at timestamp
-  archived bool [note: 'default false']
-  company_id int [ref: > companies.id, not null]
 }
 
 Table cashbacks {
@@ -55,11 +55,11 @@ Table cashbacks {
   about text
   start_at date [not null]
   end_at date [not null]
-  created_at timestamp
-  updated_at timestamp
-  archived bool [note: 'default false']
+  archived bool [not null, note: 'default false']
   company_id int [ref: > companies.id, not null]
   bank_id int [ref: > banks.id, not null]
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table rating {
