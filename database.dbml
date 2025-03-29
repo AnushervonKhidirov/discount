@@ -20,6 +20,8 @@ Table companies {
   logo_url varchar [note: 'path to company logo image']
   created_at timestamp
   updated_at timestamp
+  verified bool [not null, note: 'default false']
+  archived bool [note: 'default false']
   user_id int [ref: > users.id, not null]
 }
 
@@ -31,7 +33,7 @@ Table stores {
   close_at time
   created_at timestamp
   updated_at timestamp
-  archive bool [note: 'default false']
+  archived bool [note: 'default false']
   company_id int [ref: > companies.id, not null]
 }
 
@@ -43,7 +45,7 @@ Table discounts {
   end_at date [not null]
   created_at timestamp
   updated_at timestamp
-  archive bool [note: 'default false']
+  archived bool [note: 'default false']
   company_id int [ref: > companies.id, not null]
 }
 
@@ -55,7 +57,7 @@ Table cashbacks {
   end_at date [not null]
   created_at timestamp
   updated_at timestamp
-  archive bool [note: 'default false']
+  archived bool [note: 'default false']
   company_id int [ref: > companies.id, not null]
   bank_id int [ref: > banks.id, not null]
 }
