@@ -7,6 +7,12 @@ Table users {
   role roles
 }
 
+Table users_tokens {
+  refresh_token varchar [primary key, not null]
+  user_id int [ref: > users.id, not null]
+  expiredAt timestamp [not null]
+}
+
 Table companies {
   id int [primary key]
   name varchar [not null]
