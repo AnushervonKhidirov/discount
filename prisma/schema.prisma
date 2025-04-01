@@ -9,13 +9,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
-  role      Role     @default(USER)
+  id        Int       @id @default(autoincrement())
+  username  String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  role      Role      @default(USER)
+  archived  Boolean   @default(false)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   token     Token[]
+  company   Company[]
 
   @@map("users")
 }
@@ -27,6 +29,21 @@ model Token {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("tokens")
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
+  about     String?  @db.MediumText()
+  logoUrl   String?  @map("logo_url") @db.VarChar(255)
+  verified  Boolean  @default(false)
+  archived  Boolean  @default(false)
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("companies")
 }
 
 enum Role {
