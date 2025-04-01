@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
 import { ConflictException, NotFoundException } from '@exception';
 import { UploadService } from '../upload/upload.service';
+import { UploadPath } from '../common/constant/upload';
 
 export class BankService {
   private readonly repository = new PrismaClient().bank;
@@ -95,7 +96,7 @@ export class BankService {
 
       const [logoUrl, logoErr] = await this.uploadService.create({
         file,
-        path: 'logos',
+        path: UploadPath.Logo,
         fileName: bankImageName,
       });
 

@@ -6,6 +6,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
 import { NotFoundException } from '@exception';
 import { UploadService } from '../upload/upload.service';
+import { UploadPath } from '../common/constant/upload';
 
 export class CompanyService {
   private readonly repository = new PrismaClient().company;
@@ -102,7 +103,7 @@ export class CompanyService {
 
       const [logoUrl, logoErr] = await this.uploadService.create({
         file,
-        path: 'logos',
+        path: UploadPath.Logo,
         fileName: companyImageName,
       });
 

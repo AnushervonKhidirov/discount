@@ -1,15 +1,15 @@
 import Elysia, { t } from 'elysia';
 import { UploadService } from './upload.service';
-import { HttpException } from '@exception';
+import { UploadPath } from '../common/constant/upload';
 
-export const UploadRouter = new Elysia({ prefix: 'uploads' });
+export const UploadRouter = new Elysia();
 const uploadService = new UploadService();
 
 UploadRouter.get(
-  '/logos/:file',
+  `${UploadPath.Logo}/:file`,
   async ({ params, error }) => {
-    const file = await uploadService.get('logos', params.file);
-    if (file instanceof HttpException) throw error(file.status, { ...file });
+    const [file, err] = await uploadService.get(UploadPath.Logo, params.file);
+    if (err) throw error(err.status, { ...err });
     return file;
   },
   { params: t.Object({ file: t.String() }) },

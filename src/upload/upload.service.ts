@@ -11,7 +11,7 @@ import { exceptionHelper } from '@helper/exception.helper';
 export class UploadService {
   async get(path: string, fileName: string): ReturnPromiseWithErr<ElysiaFile> {
     try {
-      const fullPath = join(process.cwd(), 'uploads', path, fileName);
+      const fullPath = join(process.cwd(), path, fileName);
       const isExist = await exists(fullPath);
       if (!isExist) throw new NotFoundException('File not found');
       return [file(fullPath), null];
@@ -25,7 +25,7 @@ export class UploadService {
       const format = file.name.split('.').at(-1);
       if (!format) throw new InternalServerErrorException('Unable to save file');
 
-      const fullPath = join(process.cwd(), 'uploads', path);
+      const fullPath = join(process.cwd(), path);
 
       await this.createFolderIfNotExist(fullPath);
 
@@ -41,7 +41,7 @@ export class UploadService {
 
   async delete(path: string, fileName: string): ReturnPromiseWithErr<unknown> {
     try {
-      const fullPath = join(process.cwd(), 'uploads', path, fileName);
+      const fullPath = join(process.cwd(), path, fileName);
       const isExist = await exists(fullPath);
       if (!isExist) throw new NotFoundException('File not found');
       await unlink(fullPath);
