@@ -18,7 +18,7 @@ export class UploadService {
     const format = file.name.split('.').at(-1);
     if (!format) return;
 
-    const fullPath = join(process.cwd(), path);
+    const fullPath = join(process.cwd(), 'uploads', path);
 
     await this.createFolderIfNotExist(fullPath);
 
