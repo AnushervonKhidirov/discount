@@ -4,7 +4,7 @@ import type { CreateCompanyDto } from './dto/create-company.dto';
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
-import { NotFoundException } from '@exception';
+import { ConflictException, NotFoundException } from '@exception';
 import { UploadService } from '../upload/upload.service';
 import { UploadPath } from '../common/constant/upload';
 
@@ -31,9 +31,12 @@ export class CompanyService {
     }
   }
 
-  async create(createPostDto: CreateCompanyDto, userId: number): ReturnPromiseWithErr<Company> {
+  async create({ name, about }: CreateCompanyDto, userId: number): ReturnPromiseWithErr<Company> {
     try {
-      const companies = await this.repository.create({ data: { ...createPostDto, userId } });
+      const [isExist] = await this.findOne({ name });
+      if (isExist) throw new ConflictException(`Company '${name}' already exists`);
+
+      const companies = await this.repository.create({ data: { name, about, userId } });
       return [companies, null];
     } catch (err) {
       return exceptionHelper(err, true);
@@ -42,19 +45,29 @@ export class CompanyService {
 
   async update(
     id: number,
-    updatePostDto: Partial<Company>,
+    { name, about, logoUrl }: Partial<Company>,
     userId: number,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const [_, err] = await this.findOne({ id, userId });
+      const [companies, err] = await this.findMany({ AND: [{ id }, { name }] });
       if (err) throw err;
 
-      const companies = await this.repository.update({
-        data: updatePostDto,
+      const currentCompany = companies.find(companies => companies.id === id);
+      if (!currentCompany || currentCompany.userId !== userId) {
+        throw new NotFoundException('Company not found');
+      }
+
+      const sameCompanyName = companies.find(companies => companies.name === name);
+      if (sameCompanyName?.id !== id) {
+        throw new ConflictException(`Company '${name}' already exist`);
+      }
+
+      const company = await this.repository.update({
+        data: { name, about, logoUrl },
         where: { id },
       });
 
-      return [companies, null];
+      return [company, null];
     } catch (err) {
       console.log(err);
 
