@@ -1,5 +1,5 @@
 import type { JwtPayload } from 'jsonwebtoken';
-import type { Prisma, Token as UserToken } from '@prisma/client';
+import type { Prisma, User, Token as UserToken } from '@prisma/client';
 import type { Tokens } from './token.type';
 import type { ReturnWithErr, ReturnPromiseWithErr } from '@type/return-with-error.type';
 
@@ -40,9 +40,14 @@ export class TokenService {
     }
   }
 
-  async delete(refreshToken: string): ReturnPromiseWithErr<UserToken> {
+  async delete(
+    refreshToken: string,
+  ): ReturnPromiseWithErr<UserToken & { user: Omit<User, 'password'> }> {
     try {
-      const token = await this.repository.delete({ where: { refreshToken } });
+      const token = await this.repository.delete({
+        where: { refreshToken },
+        include: { user: { omit: { password: true } } },
+      });
       return [token, null];
     } catch (err) {
       return exceptionHelper(err, true);
