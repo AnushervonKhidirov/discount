@@ -1,7 +1,6 @@
-import type { Company } from '@prisma/client';
+import type { Company, User } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import type { CreateCompanyDto } from './dto/create-company.dto';
-import type { UpdateCompanyDto } from './dto/update-company.dto';
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
@@ -42,7 +41,7 @@ export class CompanyService {
 
   async update(
     id: number,
-    updatePostDto: UpdateCompanyDto,
+    updatePostDto: Partial<User>,
     userId: number,
   ): ReturnPromiseWithErr<Company> {
     try {
@@ -51,18 +50,20 @@ export class CompanyService {
 
       const companies = await this.repository.update({
         data: updatePostDto,
-        where: { id, userId },
+        where: { id },
       });
 
       return [companies, null];
     } catch (err) {
+      console.log(err);
+
       return exceptionHelper(err, true);
     }
   }
 
   async archive(id: number, userId: number): ReturnPromiseWithErr<Company> {
     try {
-      const [company, err] = await this.update(id, { archive: true }, userId);
+      const [company, err] = await this.update(id, { archived: true }, userId);
       if (err) throw err;
       return [company, null];
     } catch (err) {
@@ -72,7 +73,7 @@ export class CompanyService {
 
   async unArchive(id: number, userId: number): ReturnPromiseWithErr<Company> {
     try {
-      const [company, err] = await this.update(id, { archive: false }, userId);
+      const [company, err] = await this.update(id, { archived: false }, userId);
       if (err) throw err;
       return [company, null];
     } catch (err) {

@@ -1,7 +1,6 @@
 import type { Prisma, User } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import type { CreateUserDto } from './dto/create-user.dto';
-import type { UpdateUserDto } from './dto/update-user.dto';
 
 import { PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
@@ -48,7 +47,7 @@ export class UserService {
 
   async update(
     id: number,
-    updateUserDto: UpdateUserDto,
+    updateUserDto: Partial<User>,
   ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const [_, err] = await this.findOne({ id });
@@ -71,7 +70,7 @@ export class UserService {
 
   async archive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [user, err] = await this.update(id, { archive: true });
+      const [user, err] = await this.update(id, { archived: true });
       if (err) throw err;
       return [user, null];
     } catch (err) {
@@ -81,7 +80,7 @@ export class UserService {
 
   async unArchive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [user, err] = await this.update(id, { archive: false });
+      const [user, err] = await this.update(id, { archived: false });
       if (err) throw err;
       return [user, null];
     } catch (err) {
