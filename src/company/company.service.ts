@@ -1,7 +1,7 @@
 import type { Company } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
-import type { CreatePostDto } from './dto/create-post.dto';
-import type { UpdatePostDto } from './dto/update-post.dto';
+import type { CreateCompanyDto } from './dto/create-company.dto';
+import type { UpdateCompanyDto } from './dto/update-company.dto';
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
@@ -29,7 +29,7 @@ export class CompanyService {
     }
   }
 
-  async create(createPostDto: CreatePostDto, userId: number): ReturnPromiseWithErr<Company> {
+  async create(createPostDto: CreateCompanyDto, userId: number): ReturnPromiseWithErr<Company> {
     try {
       const companies = await this.repository.create({ data: { ...createPostDto, userId } });
       return [companies, null];
@@ -40,7 +40,7 @@ export class CompanyService {
 
   async update(
     id: number,
-    updatePostDto: UpdatePostDto,
+    updatePostDto: UpdateCompanyDto,
     userId: number,
   ): ReturnPromiseWithErr<Company> {
     try {

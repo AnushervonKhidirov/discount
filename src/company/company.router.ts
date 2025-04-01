@@ -1,6 +1,6 @@
 import Elysia, { t } from 'elysia';
-import { CreatePostBody } from './dto/create-post.dto';
-import { UpdatePostBody } from './dto/update-post.dto';
+import { createCompanyBody } from './dto/create-company.dto';
+import { updateCompanyBody } from './dto/update-company.dto';
 import { authMiddleware } from '@middleware/auth.middleware';
 import { CompanyService } from './company.service';
 
@@ -31,7 +31,7 @@ CompanyRouter.use(authMiddleware).post(
     return company;
   },
   {
-    body: CreatePostBody,
+    body: createCompanyBody,
   },
 );
 
@@ -44,7 +44,7 @@ CompanyRouter.use(authMiddleware).patch(
   },
   {
     params: t.Object({ id: t.Number() }),
-    body: UpdatePostBody,
+    body: updateCompanyBody,
   },
 );
 
