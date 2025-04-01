@@ -46,6 +46,17 @@ model Company {
   @@map("companies")
 }
 
+model Bank {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
+  logoUrl   String?  @map("logo_url") @db.VarChar(255)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("banks")
+}
+
 enum Role {
   USER
   ADMIN

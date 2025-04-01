@@ -1,4 +1,4 @@
-import type { Company, User } from '@prisma/client';
+import type { Company } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import type { CreateCompanyDto } from './dto/create-company.dto';
 
@@ -41,7 +41,7 @@ export class CompanyService {
 
   async update(
     id: number,
-    updatePostDto: Partial<User>,
+    updatePostDto: Partial<Company>,
     userId: number,
   ): ReturnPromiseWithErr<Company> {
     try {

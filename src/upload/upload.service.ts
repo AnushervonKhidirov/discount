@@ -16,7 +16,7 @@ export class UploadService {
       if (!isExist) throw new NotFoundException('File not found');
       return [file(fullPath), null];
     } catch (err) {
-      return exceptionHelper(err);
+      return exceptionHelper(err, true);
     }
   }
 
@@ -35,7 +35,7 @@ export class UploadService {
       await writeFile(join(fullPath, name), fileBuffer);
       return [join(path, name), null];
     } catch (err) {
-      return exceptionHelper(err);
+      return exceptionHelper(err, true);
     }
   }
 
@@ -47,7 +47,7 @@ export class UploadService {
       await unlink(fullPath);
       return [{}, null];
     } catch (err) {
-      return exceptionHelper(err);
+      return exceptionHelper(err, true);
     }
   }
 
