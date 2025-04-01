@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { createUserBody } from '../user/dto/create-user.dto';
 import { signInBody } from './dto/sign-in.dto';
 import { signOutBody } from './dto/sign-out.dto';
+import { refreshTokenBody } from './dto/refresh-token.dto';
 
 export const AuthRouter = new Elysia({ prefix: 'auth' });
 
@@ -44,4 +45,14 @@ AuthRouter.post(
     if (err) throw error(err.status, { ...err });
   },
   { body: signOutBody },
+);
+
+AuthRouter.post(
+  '/refresh-token',
+  async ({ body, error }) => {
+    const [token, err] = await authService.refreshToken(body);
+    if (err) throw error(err.status, { ...err });
+    return token;
+  },
+  { body: refreshTokenBody },
 );
