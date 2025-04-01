@@ -34,7 +34,7 @@ UserRouter.use(authMiddleware).patch(
 );
 
 UserRouter.use(roleMiddleware(['USER', 'ADMIN'])).delete('/', async ({ store, error }) => {
-  const [user, err] = await userService.delete(store.userId);
+  const [user, err] = await userService.archive(store.userId);
   if (err) throw error(err.status, { ...err });
   return user;
 });
