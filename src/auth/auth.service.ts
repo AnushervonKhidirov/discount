@@ -4,6 +4,7 @@ import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import type { CreateUserDto } from '../user/dto/create-user.dto';
 import type { SignInDto } from './dto/sign-in.dto';
 import type { SignOutDto } from './dto/sign-out.dto';
+import type { RefreshTokenDto } from './dto/refresh-token.dto';
 
 import { UserService } from '../user/user.service';
 import { TokenService } from '../token/token.service';
@@ -75,6 +76,23 @@ export class AuthService {
     } catch (err) {
       const error = err instanceof HttpException ? err : new InternalServerErrorException();
       return error;
+    }
+  }
+
+  async refreshToken({ refreshToken }: RefreshTokenDto): ReturnPromiseWithErr<Tokens> {
+    try {
+      const [_, verifyErr] = this.tokenService.verifyRefreshToken(refreshToken);
+      if (verifyErr) throw verifyErr;
+
+      const [deletedToken, deleteErr] = await this.tokenService.delete(refreshToken);
+      if (deleteErr) throw deleteErr;
+
+      const [token, tokenErr] = await this.createTokens(deletedToken.user);
+      if (tokenErr) throw tokenErr;
+
+      return [token, null];
+    } catch (err) {
+      return exceptionHelper(err);
     }
   }
 
