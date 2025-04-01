@@ -60,6 +60,26 @@ export class CompanyService {
     }
   }
 
+  async archive(id: number, userId: number): ReturnPromiseWithErr<Company> {
+    try {
+      const [company, err] = await this.update(id, { archive: true }, userId);
+      if (err) throw err;
+      return [company, null];
+    } catch (err) {
+      return exceptionHelper(err, true);
+    }
+  }
+
+  async unArchive(id: number, userId: number): ReturnPromiseWithErr<Company> {
+    try {
+      const [company, err] = await this.update(id, { archive: false }, userId);
+      if (err) throw err;
+      return [company, null];
+    } catch (err) {
+      return exceptionHelper(err, true);
+    }
+  }
+
   async delete(id: number, userId: number): ReturnPromiseWithErr<Company> {
     try {
       const [_, err] = await this.findOne({ id, userId });

@@ -69,6 +69,26 @@ export class UserService {
     }
   }
 
+  async archive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
+    try {
+      const [user, err] = await this.update(id, { archive: true });
+      if (err) throw err;
+      return [user, null];
+    } catch (err) {
+      return exceptionHelper(err, true);
+    }
+  }
+
+  async unArchive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
+    try {
+      const [user, err] = await this.update(id, { archive: false });
+      if (err) throw err;
+      return [user, null];
+    } catch (err) {
+      return exceptionHelper(err, true);
+    }
+  }
+
   async delete(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const [_, err] = await this.findOne({ id });
