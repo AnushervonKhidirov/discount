@@ -2,9 +2,10 @@ Table users {
   id int [primary key]
   username varchar [not null]
   password varchar [not null]
+  role roles
+  archived bool [not null, note: 'default false']
   created_at timestamp
   updated_at timestamp
-  role roles
 }
 
 Table users_tokens {
