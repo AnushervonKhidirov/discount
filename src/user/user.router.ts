@@ -33,7 +33,7 @@ UserRouter.use(authMiddleware).put(
   { body: updateUserBody },
 );
 
-UserRouter.use(authMiddleware).patch(
+UserRouter.use(authMiddleware).delete(
   '/',
   async ({ store, error }) => {
     const [user, err] = await userService.archive(store.userId);
