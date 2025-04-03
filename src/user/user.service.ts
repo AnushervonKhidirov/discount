@@ -4,7 +4,7 @@ import type { CreateUserDto } from './dto/create-user.dto';
 
 import { PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
-import { NotFoundException, ConflictException } from '@exception';
+import { NotFoundException } from '@exception';
 
 export class UserService {
   private readonly repository = new PrismaClient().user;
@@ -36,9 +36,6 @@ export class UserService {
     password,
   }: CreateUserDto): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [isExist] = await this.findOne({ username });
-      if (isExist) throw new ConflictException(`User '${username}' already exists`);
-
       const hashedPassword = await Bun.password.hash(password, 'bcrypt');
 
       const user = await this.repository.create({
@@ -56,19 +53,6 @@ export class UserService {
     { username, password }: Partial<User>,
   ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [users, err] = await this.findMany({
-        AND: [{ id }, { username: username }],
-      });
-      if (err) throw err;
-
-      const currentUser = users.find(user => user.id === id);
-      if (!currentUser) throw new NotFoundException('User not found');
-
-      const sameUserName = users.find(user => user.username === username);
-      if (sameUserName?.id !== id) {
-        throw new ConflictException(`User '${username}' already exist`);
-      }
-
       const hashedPassword = password && (await Bun.password.hash(password, 'bcrypt'));
 
       const user = await this.repository.update({
@@ -84,8 +68,12 @@ export class UserService {
 
   async archive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [user, err] = await this.update(id, { archived: true });
-      if (err) throw err;
+      const user = await this.repository.update({
+        data: { archived: true },
+        where: { id },
+        omit: { password: true },
+      });
+
       return [user, null];
     } catch (err) {
       return exceptionHelper(err, true);
@@ -94,8 +82,12 @@ export class UserService {
 
   async unArchive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [user, err] = await this.update(id, { archived: false });
-      if (err) throw err;
+      const user = await this.repository.update({
+        data: { archived: false },
+        where: { id },
+        omit: { password: true },
+      });
+
       return [user, null];
     } catch (err) {
       return exceptionHelper(err, true);
@@ -104,9 +96,6 @@ export class UserService {
 
   async delete(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
-      const [_, err] = await this.findOne({ id });
-      if (err) throw err;
-
       const deletedUser = await this.repository.delete({ where: { id }, omit: { password: true } });
       return [deletedUser, null];
     } catch (err) {

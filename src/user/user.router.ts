@@ -23,7 +23,7 @@ UserRouter.get(
   { params: t.Object({ id: t.Number() }) },
 );
 
-UserRouter.use(authMiddleware).patch(
+UserRouter.use(authMiddleware).put(
   '/',
   async ({ store, body, error }) => {
     const [user, err] = await userService.update(store.userId, body);
@@ -33,8 +33,42 @@ UserRouter.use(authMiddleware).patch(
   { body: updateUserBody },
 );
 
-UserRouter.use(roleMiddleware(['USER', 'ADMIN'])).delete('/', async ({ store, error }) => {
-  const [user, err] = await userService.archive(store.userId);
-  if (err) throw error(err.status, { ...err });
-  return user;
-});
+UserRouter.use(authMiddleware).patch(
+  '/',
+  async ({ store, error }) => {
+    const [user, err] = await userService.archive(store.userId);
+    if (err) throw error(err.status, { ...err });
+    return user;
+  },
+  { ...roleMiddleware(['USER', 'ADMIN']) },
+);
+
+UserRouter.use(authMiddleware).patch(
+  '/archive/:id',
+  async ({ params, error }) => {
+    const [user, err] = await userService.archive(params.id);
+    if (err) throw error(err.status, { ...err });
+    return user;
+  },
+  { params: t.Object({ id: t.Number() }), ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']) },
+);
+
+UserRouter.use(authMiddleware).patch(
+  '/unarchive/:id',
+  async ({ params, error }) => {
+    const [user, err] = await userService.unArchive(params.id);
+    if (err) throw error(err.status, { ...err });
+    return user;
+  },
+  { params: t.Object({ id: t.Number() }), ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']) },
+);
+
+UserRouter.use(authMiddleware).delete(
+  '/delete/:id',
+  async ({ params, error }) => {
+    const [user, err] = await userService.delete(params.id);
+    if (err) throw error(err.status, { ...err });
+    return user;
+  },
+  { params: t.Object({ id: t.Number() }), ...roleMiddleware(['SUPER_ADMIN']) },
+);

@@ -4,7 +4,7 @@ import type { CreateCompanyDto } from './dto/create-company.dto';
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { exceptionHelper } from '@helper/exception.helper';
-import { ConflictException, NotFoundException } from '@exception';
+import { NotFoundException } from '@exception';
 import { UploadService } from '../upload/upload.service';
 import { UploadPath } from '../common/constant/upload';
 
@@ -33,9 +33,6 @@ export class CompanyService {
 
   async create({ name, about }: CreateCompanyDto, userId: number): ReturnPromiseWithErr<Company> {
     try {
-      const [isExist] = await this.findOne({ name });
-      if (isExist) throw new ConflictException(`Company '${name}' already exists`);
-
       const companies = await this.repository.create({ data: { name, about, userId } });
       return [companies, null];
     } catch (err) {
@@ -49,58 +46,44 @@ export class CompanyService {
     userId: number,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const [companies, err] = await this.findMany({ AND: [{ id }, { name }] });
-      if (err) throw err;
-
-      const currentCompany = companies.find(companies => companies.id === id);
-      if (!currentCompany || currentCompany.userId !== userId) {
-        throw new NotFoundException('Company not found');
-      }
-
-      const sameCompanyName = companies.find(companies => companies.name === name);
-      if (sameCompanyName?.id !== id) {
-        throw new ConflictException(`Company '${name}' already exist`);
-      }
-
       const company = await this.repository.update({
         data: { name, about, logoUrl },
-        where: { id },
+        where: { id, userId },
       });
 
       return [company, null];
     } catch (err) {
-      console.log(err);
-
       return exceptionHelper(err, true);
     }
   }
 
-  async archive(id: number, userId: number): ReturnPromiseWithErr<Company> {
+  async archive(id: number, userId?: number): ReturnPromiseWithErr<Company> {
     try {
-      const [company, err] = await this.update(id, { archived: true }, userId);
-      if (err) throw err;
+      const company = await this.repository.update({
+        where: { id, userId },
+        data: { archived: true },
+      });
       return [company, null];
     } catch (err) {
       return exceptionHelper(err, true);
     }
   }
 
-  async unArchive(id: number, userId: number): ReturnPromiseWithErr<Company> {
+  async unArchive(id: number, userId?: number): ReturnPromiseWithErr<Company> {
     try {
-      const [company, err] = await this.update(id, { archived: false }, userId);
-      if (err) throw err;
+      const company = await this.repository.update({
+        where: { id, userId },
+        data: { archived: false },
+      });
       return [company, null];
     } catch (err) {
       return exceptionHelper(err, true);
     }
   }
 
-  async delete(id: number, userId: number): ReturnPromiseWithErr<Company> {
+  async delete(id: number): ReturnPromiseWithErr<Company> {
     try {
-      const [_, err] = await this.findOne({ id, userId });
-      if (err) throw err;
-
-      const companies = await this.repository.delete({ where: { id, userId } });
+      const companies = await this.repository.delete({ where: { id } });
       return [companies, null];
     } catch (err) {
       return exceptionHelper(err, true);

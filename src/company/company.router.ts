@@ -4,6 +4,7 @@ import { updateCompanyBody } from './dto/update-company.dto';
 import { authMiddleware } from '@middleware/auth.middleware';
 import { CompanyService } from './company.service';
 import { uploadBody } from '../upload/dto/upload.dto';
+import { roleMiddleware } from '@middleware/role-middleware';
 
 export const CompanyRouter = new Elysia({ prefix: 'companies' });
 const companyService = new CompanyService();
@@ -36,7 +37,7 @@ CompanyRouter.use(authMiddleware).post(
   },
 );
 
-CompanyRouter.use(authMiddleware).patch(
+CompanyRouter.use(authMiddleware).put(
   '/:id',
   async ({ body, params, store, error }) => {
     const [company, err] = await companyService.update(params.id, body, store.userId);
@@ -49,7 +50,7 @@ CompanyRouter.use(authMiddleware).patch(
   },
 );
 
-CompanyRouter.use(authMiddleware).delete(
+CompanyRouter.use(authMiddleware).patch(
   '/:id',
   async ({ params, store, error }) => {
     const [company, err] = await companyService.archive(params.id, store.userId);
@@ -58,6 +59,45 @@ CompanyRouter.use(authMiddleware).delete(
   },
   {
     params: t.Object({ id: t.Number() }),
+  },
+);
+
+CompanyRouter.use(authMiddleware).patch(
+  '/archive/:id',
+  async ({ params, error }) => {
+    const [company, err] = await companyService.archive(params.id);
+    if (err) throw error(err.status, { ...err });
+    return company;
+  },
+  {
+    params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
+  },
+);
+
+CompanyRouter.use(authMiddleware).patch(
+  '/unarchive/:id',
+  async ({ params, error }) => {
+    const [company, err] = await companyService.unArchive(params.id);
+    if (err) throw error(err.status, { ...err });
+    return company;
+  },
+  {
+    params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
+  },
+);
+
+CompanyRouter.use(authMiddleware).delete(
+  '/delete/:id',
+  async ({ params, error }) => {
+    const [company, err] = await companyService.delete(params.id);
+    if (err) throw error(err.status, { ...err });
+    return company;
+  },
+  {
+    params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['SUPER_ADMIN']),
   },
 );
 

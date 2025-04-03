@@ -4,6 +4,7 @@ import { BankService } from './bank.service';
 import { createBankBody } from './dto/create-bank.dto';
 import { updateBankBody } from './dto/update-bank.dto';
 import { uploadBody } from '../upload/dto/upload.dto';
+import { authMiddleware } from '@middleware/auth.middleware';
 
 export const BankRouter = new Elysia({ prefix: 'banks' });
 
@@ -25,7 +26,7 @@ BankRouter.get(
   { params: t.Object({ id: t.Number() }) },
 );
 
-BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).post(
+BankRouter.use(authMiddleware).post(
   '/',
   async ({ body, error }) => {
     const [bank, err] = await banksService.create(body);
@@ -34,10 +35,11 @@ BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).post(
   },
   {
     body: createBankBody,
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
   },
 );
 
-BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).patch(
+BankRouter.use(authMiddleware).put(
   '/:id',
   async ({ body, params, error }) => {
     const [bank, err] = await banksService.update(params.id, body);
@@ -47,11 +49,12 @@ BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).patch(
   {
     params: t.Object({ id: t.Number() }),
     body: updateBankBody,
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
   },
 );
 
-BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).delete(
-  '/:id',
+BankRouter.use(authMiddleware).patch(
+  '/archive/:id',
   async ({ params, error }) => {
     const [bank, err] = await banksService.archive(params.id);
     if (err) throw error(err.status, { ...err });
@@ -59,10 +62,24 @@ BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).delete(
   },
   {
     params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
   },
 );
 
-BankRouter.use(roleMiddleware(['SUPER_ADMIN'])).delete(
+BankRouter.use(authMiddleware).patch(
+  '/unarchive/:id',
+  async ({ params, error }) => {
+    const [bank, err] = await banksService.unArchive(params.id);
+    if (err) throw error(err.status, { ...err });
+    return bank;
+  },
+  {
+    params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
+  },
+);
+
+BankRouter.use(authMiddleware).delete(
   '/delete/:id',
   async ({ params, error }) => {
     const [bank, err] = await banksService.delete(params.id);
@@ -71,10 +88,11 @@ BankRouter.use(roleMiddleware(['SUPER_ADMIN'])).delete(
   },
   {
     params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['SUPER_ADMIN']),
   },
 );
 
-BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).post(
+BankRouter.use(authMiddleware).post(
   '/upload-logo/:id',
   async ({ params, body, error }) => {
     const [bank, err] = await banksService.uploadLogo(params.id, body.file);
@@ -84,5 +102,6 @@ BankRouter.use(roleMiddleware(['ADMIN', 'SUPER_ADMIN'])).post(
   {
     body: uploadBody,
     params: t.Object({ id: t.Number() }),
+    ...roleMiddleware(['ADMIN', 'SUPER_ADMIN']),
   },
 );
