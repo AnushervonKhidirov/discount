@@ -32,16 +32,17 @@ model Token {
 }
 
 model Company {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(50)
-  about     String?  @db.MediumText()
-  logoUrl   String?  @map("logo_url") @db.VarChar(255)
-  verified  Boolean  @default(false)
-  archived  Boolean  @default(false)
-  userId    Int      @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int        @id @default(autoincrement())
+  name      String     @unique @db.VarChar(50)
+  about     String?    @db.MediumText()
+  logoUrl   String?    @map("logo_url") @db.VarChar(255)
+  verified  Boolean    @default(false)
+  archived  Boolean    @default(false)
+  userId    Int        @map("user_id")
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Discount  Discount[]
 
   @@map("companies")
 }
@@ -55,6 +56,21 @@ model Bank {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 
   @@map("banks")
+}
+
+model Discount {
+  id        Int      @id @default(autoincrement())
+  size      Int      @db.TinyInt()
+  about     String?  @db.MediumText()
+  startAt   DateTime @map("start_at") @db.DateTime()
+  endAt     DateTime @map("end_at") @db.DateTime()
+  archived  Boolean  @default(false)
+  companyId Int      @map("company_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("discounts")
 }
 
 enum Role {
