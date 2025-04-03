@@ -1,11 +1,11 @@
 import type { Discount } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
+import type { CreateDiscountDto } from './dto/create-discount.dto';
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { NotFoundException } from '@exception';
 
 import { exceptionHelper } from '@helper/exception.helper';
-import type { CreateDiscountDto } from './dto/create-discount.dto';
 
 export class DiscountService {
   private readonly repository = new PrismaClient().discount;
