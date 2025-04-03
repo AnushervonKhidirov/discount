@@ -50,7 +50,7 @@ CompanyRouter.use(authMiddleware).put(
   },
 );
 
-CompanyRouter.use(authMiddleware).patch(
+CompanyRouter.use(authMiddleware).delete(
   '/:id',
   async ({ params, store, error }) => {
     const [company, err] = await companyService.archive(params.id, store.userId);
