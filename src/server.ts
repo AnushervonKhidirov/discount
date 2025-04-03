@@ -5,6 +5,7 @@ import { UserRouter } from './user/user.router';
 import { CompanyRouter } from './company/company.router';
 import { BankRouter } from './bank/bank.router';
 import { UploadRouter } from './upload/upload.router';
+import { DiscountRouter } from './discount/discount.router';
 
 const PORT = process.env.PORT ?? 4000;
 
@@ -16,5 +17,6 @@ app.use(UserRouter);
 app.use(CompanyRouter);
 app.use(BankRouter);
 app.use(UploadRouter);
+app.use(DiscountRouter);
 
 app.listen(PORT);
