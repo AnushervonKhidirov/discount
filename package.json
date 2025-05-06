@@ -9,9 +9,9 @@
     "build": "bun build ./src/* --outdir ./build"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
     "@elysiajs/swagger": "^1.2.2",
     "@prisma/client": "^6.5.0",
-    "cors": "^2.8.5",
     "elysia": "^1.2.25",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^11.1.0",
