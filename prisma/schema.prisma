@@ -42,8 +42,7 @@ model Company {
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  discount  Discount[]
-  cashback  Cashback[]
+  benefit   Benefit[]
   store     Store[]
 
   @@map("companies")
@@ -56,41 +55,28 @@ model Bank {
   archived  Boolean    @default(false)
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
-  cashback  Cashback[]
+  benefit   Benefit[]
 
   @@map("banks")
 }
 
-model Discount {
-  id        Int      @id @default(autoincrement())
-  size      Int      @db.TinyInt()
-  about     String?  @db.MediumText()
-  startAt   DateTime @map("start_at") @db.DateTime()
-  endAt     DateTime @map("end_at") @db.DateTime()
-  archived  Boolean  @default(false)
-  companyId Int      @map("company_id")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@map("discounts")
-}
+model Benefit {
+  id        Int         @id @default(autoincrement())
+  type      BenefitType
+  size      Int         @db.TinyInt()
+  about     String?     @db.MediumText()
+  startAt   DateTime    @map("start_at") @db.DateTime()
+  endAt     DateTime    @map("end_at") @db.DateTime()
+  archived  Boolean     @default(false)
+  companyId Int         @map("company_id")
+  bankId    Int?        @map("bank_id")
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bank      Bank?       @relation(fields: [bankId], references: [id], onDelete: Cascade)
 
-model Cashback {
-  id        Int      @id @default(autoincrement())
-  size      Int      @db.TinyInt()
-  about     String?  @db.MediumText()
-  startAt   DateTime @map("start_at") @db.DateTime()
-  endAt     DateTime @map("end_at") @db.DateTime()
-  archived  Boolean  @default(false)
-  companyId Int      @map("company_id")
-  bankId    Int      @map("bank_id")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  bank      Bank     @relation(fields: [bankId], references: [id], onDelete: Cascade)
-
-  @@map("cashbacks")
+  @@map("benefits")
 }
 
 model Store {
@@ -112,4 +98,9 @@ enum Role {
   USER
   ADMIN
   SUPER_ADMIN
+}
+
+enum BenefitType {
+  DISCOUNT
+  CASHBACK
 }
