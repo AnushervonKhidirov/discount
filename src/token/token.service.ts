@@ -1,17 +1,23 @@
 import type { JwtPayload } from 'jsonwebtoken';
 import type { Prisma, User, Token as UserToken } from '@prisma/client';
-import type { Tokens } from './token.type';
-import type { ReturnWithErr, ReturnPromiseWithErr } from '@type/return-with-error.type';
+import type { Tokens } from './type/token.type';
+import type {
+  ReturnWithErr,
+  ReturnPromiseWithErr,
+} from '@type/return-with-error.type';
 
-import { PrismaClient } from '@prisma/client';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
-import { exceptionHelper } from '@helper/exception.helper';
-import { UnauthorizedException } from '@exception';
+import { PrismaService } from 'src/prisma/prisma.service';
 
+import { exceptionHandler } from '@helper/exception.helper';
+
+@Injectable()
 export class TokenService {
-  private readonly repository = new PrismaClient().token;
   private readonly accessKey = process.env.ACCESS_TOKEN_SECRET;
   private readonly refreshKey = process.env.REFRESH_TOKEN_SECRET;
+
+  constructor(private readonly prisma: PrismaService) {}
 
   generate(payload: JwtPayload): ReturnWithErr<Tokens> {
     try {
@@ -24,19 +30,24 @@ export class TokenService {
 
       return [{ accessToken, refreshToken }, null];
     } catch (err) {
-      return exceptionHelper(err, true);
+      return exceptionHandler(err);
     }
   }
 
-  async save(userId: number, refreshToken: string): ReturnPromiseWithErr<UserToken> {
+  async save(
+    userId: number,
+    refreshToken: string,
+  ): ReturnPromiseWithErr<UserToken> {
     try {
       const expiredAt = new Date();
       expiredAt.setHours(expiredAt.getHours() + 10);
 
-      const token = await this.repository.create({ data: { refreshToken, userId, expiredAt } });
+      const token = await this.prisma.token.create({
+        data: { refreshToken, userId, expiredAt },
+      });
       return [token, null];
     } catch (err) {
-      return exceptionHelper(err, true);
+      return exceptionHandler(err);
     }
   }
 
@@ -44,33 +55,47 @@ export class TokenService {
     refreshToken: string,
   ): ReturnPromiseWithErr<UserToken & { user: Omit<User, 'password'> }> {
     try {
-      const token = await this.repository.delete({
+      const token = await this.prisma.token.delete({
         where: { refreshToken },
         include: { user: { omit: { password: true } } },
       });
       return [token, null];
     } catch (err) {
-      return exceptionHelper(err, true);
+      return exceptionHandler(err);
     }
   }
 
-  async deleteAllUsersToken(userId: number): ReturnPromiseWithErr<Prisma.BatchPayload> {
+  async deleteAllUsersToken(
+    userId: number,
+  ): ReturnPromiseWithErr<Prisma.BatchPayload> {
     try {
-      const token = await this.repository.deleteMany({ where: { userId } });
+      const token = await this.prisma.token.deleteMany({ where: { userId } });
       return [token, null];
     } catch (err) {
-      return exceptionHelper(err, true);
+      return exceptionHandler(err);
     }
+  }
+
+  async deleteExpiredTokens(): ReturnPromiseWithErr<Prisma.BatchPayload> {
+    const tokens = await this.prisma.token.deleteMany({
+      where: { expiredAt: { lte: new Date() } },
+    });
+
+    return [tokens, null];
   }
 
   verifyAccessToken(accessToken: string): ReturnWithErr<JwtPayload> {
     try {
       if (!this.accessKey) throw new Error('Access token key not found');
       const userPayload = verify(accessToken, this.accessKey);
-      if (typeof userPayload === 'string') throw new Error('Payload is a string');
+
+      if (typeof userPayload === 'string') {
+        throw new UnauthorizedException('Invalid token');
+      }
+
       return [userPayload, null];
     } catch (err) {
-      return exceptionHelper(new UnauthorizedException('Invalid token'), true);
+      return exceptionHandler(err);
     }
   }
 
@@ -78,10 +103,14 @@ export class TokenService {
     try {
       if (!this.refreshKey) throw new Error('Refresh token key not found');
       const userPayload = verify(refreshToken, this.refreshKey);
-      if (typeof userPayload === 'string') throw new Error('Payload is a string');
+
+      if (typeof userPayload === 'string') {
+        throw new UnauthorizedException('Invalid token');
+      }
+
       return [userPayload, null];
     } catch (err) {
-      return exceptionHelper(new UnauthorizedException('Invalid token'), true);
+      return exceptionHandler(err);
     }
   }
 }

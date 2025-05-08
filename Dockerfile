@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.5-alpine
+FROM node:22.15.0-alpine
 COPY ./ /usr/app
 WORKDIR /usr/app
-RUN bun install
+RUN npm install

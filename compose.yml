@@ -3,7 +3,7 @@ services:
     build: .
     ports:
       - ${PORT}:${PORT}
-    command: bun run dev
+    command: npm run start:dev
     environment:
       DB_HOST: db
       DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}

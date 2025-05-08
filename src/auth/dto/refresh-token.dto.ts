@@ -1,7 +1,9 @@
-import { t } from 'elysia';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
-export const refreshTokenBody = t.Object({
-  refreshToken: t.String(),
-});
-
-export type RefreshTokenDto = typeof refreshTokenBody.static;
+export class RefreshTokenDto {
+  @ApiProperty({ example: 'your_refresh_token' })
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
+}

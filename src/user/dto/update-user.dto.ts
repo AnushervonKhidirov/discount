@@ -1,8 +1,4 @@
-import { t } from 'elysia';
+import { PartialType } from '@nestjs/swagger';
+import { CreateUserDto } from './create-user.dto';
 
-export const updateUserBody = t.Object({
-  username: t.Optional(t.String()),
-  password: t.Optional(t.String({ minLength: 5 })),
-});
-
-export type UpdateUserDto = typeof updateUserBody.static;
+export class UpdateUserDto extends PartialType(CreateUserDto) {}

@@ -1,8 +1,14 @@
-import { t } from 'elysia';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
-export const createUserBody = t.Object({
-  username: t.String(),
-  password: t.String({ minLength: 5 }),
-});
+export class CreateUserDto {
+  @ApiProperty({ example: 'your_user_name' })
+  @IsString()
+  @IsNotEmpty()
+  username: string;
 
-export type CreateUserDto = typeof createUserBody.static;
+  @ApiProperty({ example: 'your_strong_password' })
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
