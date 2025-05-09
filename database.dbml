@@ -63,7 +63,7 @@ Table benefits {
   end_at date [not null]
   archived bool [not null, note: 'default false']
   company_id int [ref: > companies.id, not null]
-  store_ids int [ref: > stores.id, not null]
+  stores_id int [ref: > stores.id, not null]
   bank_id int [ref: > banks.id]
   promo_code varchar
   created_at timestamp
