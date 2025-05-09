@@ -43,9 +43,9 @@ export class UserController {
   @ApiResponse({ schema: { example: user } })
   @Get('/:id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const [users, err] = await this.userService.findOne({ id });
+    const [user, err] = await this.userService.findOne({ id });
     if (err) throw err;
-    return users;
+    return user;
   }
 
   @ApiResponse({ schema: { example: user } })
@@ -58,13 +58,13 @@ export class UserController {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [users, err] = await this.userService.update(
+    const [user, err] = await this.userService.update(
       +userPayload.sub,
       updateUserDto,
     );
 
     if (err) throw err;
-    return users;
+    return user;
   }
 
   @ApiResponse({ schema: { example: user } })
@@ -74,10 +74,10 @@ export class UserController {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [users, err] = await this.userService.archive(+userPayload.sub);
+    const [user, err] = await this.userService.archive(+userPayload.sub);
     if (err) throw err;
 
-    return users;
+    return user;
   }
 
   @ApiResponse({ schema: { example: user } })
@@ -87,9 +87,9 @@ export class UserController {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [users, err] = await this.userService.unArchive(+userPayload.sub);
+    const [user, err] = await this.userService.unArchive(+userPayload.sub);
     if (err) throw err;
 
-    return users;
+    return user;
   }
 }
