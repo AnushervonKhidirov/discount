@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
+import { BankModule } from './bank/bank.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UserModule } from './user/user.module';
     UserModule,
     TokenModule,
     ScheduledTasksModule,
+    BankModule,
+    UploadModule,
   ],
 })
 export class AppModule {}
