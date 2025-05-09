@@ -66,4 +66,30 @@ export class UserController {
     if (err) throw err;
     return users;
   }
+
+  @ApiResponse({ schema: { example: user } })
+  @UseGuards(AuthGuard)
+  @Patch('/archive')
+  async arcive(@Req() request: Request) {
+    const userPayload: UserTokenPayload | undefined = request['user'];
+    if (!userPayload) throw new UnauthorizedException();
+
+    const [users, err] = await this.userService.archive(+userPayload.sub);
+    if (err) throw err;
+
+    return users;
+  }
+
+  @ApiResponse({ schema: { example: user } })
+  @UseGuards(AuthGuard)
+  @Patch('/unarchive')
+  async unArchive(@Req() request: Request) {
+    const userPayload: UserTokenPayload | undefined = request['user'];
+    if (!userPayload) throw new UnauthorizedException();
+
+    const [users, err] = await this.userService.unArchive(+userPayload.sub);
+    if (err) throw err;
+
+    return users;
+  }
 }
