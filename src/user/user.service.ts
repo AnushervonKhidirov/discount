@@ -4,6 +4,7 @@ import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { hash } from 'bcryptjs';
 
 import { exceptionHandler } from '@helper/exception.helper';
@@ -21,7 +22,7 @@ export class UserService {
         where,
         omit: { password: !withPassword },
       });
-      console.log('user', user);
+
       if (!user) throw new NotFoundException('User not found');
       return [user, null];
     } catch (err) {
@@ -37,6 +38,7 @@ export class UserService {
         where,
         omit: { password: true },
       });
+
       return [users, null];
     } catch (err) {
       return exceptionHandler(err);
@@ -54,6 +56,7 @@ export class UserService {
         data: { username, password: hashedPassword },
         omit: { password: true },
       });
+
       return [user, null];
     } catch (err) {
       return exceptionHandler(err);
@@ -62,16 +65,17 @@ export class UserService {
 
   async update(
     id: number,
-    { username, password }: Partial<User>,
+    { username, password, firstName, lastName }: UpdateUserDto,
   ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const hashedPassword = password && (await hash(password, 10));
 
       const user = await this.prisma.user.update({
-        data: { username, password: hashedPassword },
+        data: { username, firstName, lastName, password: hashedPassword },
         where: { id },
         omit: { password: true },
       });
+
       return [user, null];
     } catch (err) {
       return exceptionHandler(err);
@@ -112,6 +116,7 @@ export class UserService {
         where: { id },
         omit: { password: true },
       });
+
       return [deletedUser, null];
     } catch (err) {
       return exceptionHandler(err);
