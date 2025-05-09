@@ -4,7 +4,9 @@ import { UserService } from './user.service';
 
 const user = {
   id: 1,
-  username: 'username',
+  username: 'john_doe_01',
+  firstName: 'John',
+  lastName: 'Doe',
   role: 'USER',
   archived: false,
   createdAt: '2025-05-08T16:31:28.000Z',
