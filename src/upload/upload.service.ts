@@ -1,6 +1,6 @@
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 
-import { access, writeFile, readFile, mkdir, unlink } from 'fs/promises';
+import { access, writeFile, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
 import {
   Injectable,
@@ -13,21 +13,10 @@ import { exceptionHandler } from '@helper/exception.helper';
 
 @Injectable()
 export class UploadService {
-  private readonly uploadPath = join(process.cwd(), '..', 'uploads');
+  private readonly uploadPath = join(process.cwd(), 'uploads');
 
-  async get(path: string, fileName: string): ReturnPromiseWithErr<File> {
-    try {
-      const filePath = join(this.uploadPath, path, fileName);
-      const isExist = await this.exists(filePath);
-      if (!isExist) throw new NotFoundException('File not found');
-
-      const fileData = await readFile(filePath);
-      const file = new File([fileData], fileName);
-
-      return [file, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
+  getPath(path: string, fileName: string): string {
+    return join(this.uploadPath, path, fileName);
   }
 
   async create({
