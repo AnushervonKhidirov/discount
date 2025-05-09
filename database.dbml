@@ -53,7 +53,6 @@ Table stores {
   updated_at timestamp
 }
 
-// TODO: add relation to stores
 Table benefits {
   id int [primary key]
   type benefit_type
