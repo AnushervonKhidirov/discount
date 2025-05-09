@@ -2,7 +2,9 @@ Table users {
   id int [primary key]
   username varchar [not null]
   password varchar [not null]
-  role roles
+  first_name varchar
+  last_name varchar
+  role role
   archived bool [not null, note: 'default false']
   created_at timestamp
   updated_at timestamp
@@ -17,6 +19,7 @@ Table users_tokens {
 Table companies {
   id int [primary key]
   name varchar [not null]
+  category int [ref: > categories.id, not null]
   about text
   logo_url varchar [note: 'path to company logo image']
   verified bool [not null, note: 'default false']
@@ -26,8 +29,20 @@ Table companies {
   updated_at timestamp
 }
 
+Table banks {
+  id int [primary key]
+  name varchar [not null]
+  logo_url varchar [note: 'path to bank logo image', not null]
+  archived bool [not null, note: 'default false']
+  created_at timestamp
+  updated_at timestamp
+}
+
 Table stores {
   id int [primary key]
+  country varchar [not null]
+  city varchar [not null]
+  address varchar [not null]
   latitude float [not null]
   longitude float [not null]
   open_at time
@@ -38,44 +53,27 @@ Table stores {
   updated_at timestamp
 }
 
-Table discounts {
+// TODO: add relation to stores
+Table benefits {
   id int [primary key]
+  type benefit_type
   size int [not null, note: 'from 0 to 100 (default 0)']
-  about text
+  message text
   start_at date [not null]
   end_at date [not null]
   archived bool [not null, note: 'default false']
   company_id int [ref: > companies.id, not null]
+  store_id int [ref: > stores.id, not null]
+  bank_id int [ref: > banks.id]
   created_at timestamp
   updated_at timestamp
 }
 
-Table cashbacks {
-  id int [primary key]
-  size int [not null, note: 'from 0 to 100 (default 0)']
-  about text
-  start_at date [not null]
-  end_at date [not null]
-  archived bool [not null, note: 'default false']
-  company_id int [ref: > companies.id, not null]
-  bank_id int [ref: > banks.id, not null]
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table rating {
+Table reviews {
   user_id int [ref: > users.id, not null]
   company_id int [ref: > companies.id, not null]
   value int [not null, note: 'from 0 to 5']
   comments text
-}
-
-Table banks {
-  id int [primary key]
-  name varchar [not null]
-  logo_url varchar [note: 'path to bank logo image', not null]
-  created_at timestamp
-  updated_at timestamp
 }
 
 Table employees {
@@ -83,8 +81,18 @@ Table employees {
   company_id int [ref: > companies.id, not null]
 }
 
-enum roles {
+Table categories {
+  id int [primary key]
+  value varchar
+}
+
+enum role {
   USER
   ADMIN
   SUPER_ADMIN
+}
+
+enum benefit_type {
+  DISCOUNT
+  CASHBACK
 }
