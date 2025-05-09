@@ -12,7 +12,12 @@ export class UploadController {
     @Param('fileName') fileName: string,
     @Res() response: Response,
   ) {
-    const filePath = this.uploadService.getPath(UploadPath.Logo, fileName);
+    const [filePath, err] = await this.uploadService.getPath(
+      UploadPath.Logo,
+      fileName,
+    );
+
+    if (err) throw err;
     response.sendFile(filePath);
   }
 }

@@ -13,10 +13,19 @@ import { exceptionHandler } from '@helper/exception.helper';
 
 @Injectable()
 export class UploadService {
-  private readonly uploadPath = join(process.cwd(), 'uploads');
+  private readonly uploadPath = join(process.cwd(), '..', 'uploads');
 
-  getPath(path: string, fileName: string): string {
-    return join(this.uploadPath, path, fileName);
+  async getPath(path: string, fileName: string): ReturnPromiseWithErr<string> {
+    try {
+      const filePath = join(this.uploadPath, path, fileName);
+      const isExist = await this.exists(filePath);
+
+      if (!isExist) throw new NotFoundException();
+
+      return [filePath, null];
+    } catch (err) {
+      return exceptionHandler(err);
+    }
   }
 
   async create({
@@ -63,6 +72,8 @@ export class UploadService {
 
   private async exists(path: string) {
     try {
+      console.log(path);
+
       await access(path);
       return true;
     } catch {
