@@ -15,6 +15,7 @@ import { UserService } from 'src/user/user.service';
 
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { SignOutDto } from './dto/sign-out.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 import { exceptionHandler } from '@helper/exception.helper';
@@ -64,7 +65,7 @@ export class AuthService {
 
   async signOut({
     refreshToken,
-  }: RefreshTokenDto): Promise<void | HttpException> {
+  }: SignOutDto): Promise<void | HttpException> {
     try {
       const [_, tokenErr] = this.tokenService.verifyRefreshToken(refreshToken);
       if (tokenErr) throw tokenErr;
@@ -80,7 +81,7 @@ export class AuthService {
 
   async signOutEverywhere({
     refreshToken,
-  }: RefreshTokenDto): Promise<void | HttpException> {
+  }: SignOutDto): Promise<void | HttpException> {
     try {
       const [token, err] = this.tokenService.verifyRefreshToken(refreshToken);
       if (err) throw err;
