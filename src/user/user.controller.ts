@@ -1,6 +1,21 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import type { UserTokenPayload } from 'src/token/type/token.type';
+
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 const user = {
   id: 1,
@@ -29,6 +44,25 @@ export class UserController {
   @Get('/:id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [users, err] = await this.userService.findOne({ id });
+    if (err) throw err;
+    return users;
+  }
+
+  @ApiResponse({ schema: { example: user } })
+  @UseGuards(AuthGuard)
+  @Patch()
+  async update(
+    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
+    @Req() request: Request,
+  ) {
+    const userPayload: UserTokenPayload | undefined = request['user'];
+    if (!userPayload) throw new UnauthorizedException();
+
+    const [users, err] = await this.userService.update(
+      +userPayload.sub,
+      updateUserDto,
+    );
+
     if (err) throw err;
     return users;
   }
