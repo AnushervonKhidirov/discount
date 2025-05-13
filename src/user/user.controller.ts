@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import type { UserTokenPayload } from 'src/token/type/token.type';
 
 import {
