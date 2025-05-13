@@ -17,6 +17,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 import { UploadService } from 'src/upload/upload.service';
@@ -26,6 +27,20 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 
 import { UploadPath } from 'src/common/constant/upload';
 
+const companyData = {
+  id: 1,
+  name: 'Defacto',
+  about: 'about Defacto',
+  logoUrl: '22e14d84-a522-495b-973d-a6b6fbef9fbc.png',
+  verified: false,
+  archived: false,
+  userId: 1,
+  categoryId: null,
+  createdAt: '2025-05-13T06:32:31.000Z',
+  updatedAt: '2025-05-13T09:44:17.000Z',
+  category: null,
+};
+
 @Controller('companies')
 export class CompanyController {
   constructor(
@@ -33,6 +48,7 @@ export class CompanyController {
     private readonly companyService: CompanyService,
   ) {}
 
+  @ApiResponse({ example: [companyData] })
   @Get()
   async findMany() {
     const [companies, err] = await this.companyService.findMany();
@@ -40,6 +56,7 @@ export class CompanyController {
     return companies;
   }
 
+  @ApiResponse({ example: companyData })
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [company, err] = await this.companyService.findOne({ id });
@@ -47,6 +64,7 @@ export class CompanyController {
     return company;
   }
 
+  @ApiResponse({ example: companyData })
   @UseGuards(AuthGuard)
   @Post()
   async create(
@@ -65,6 +83,7 @@ export class CompanyController {
     return company;
   }
 
+  @ApiResponse({ example: companyData })
   @UseGuards(AuthGuard)
   @Patch(':id')
   async update(
@@ -84,6 +103,7 @@ export class CompanyController {
     return company;
   }
 
+  @ApiResponse({ example: companyData })
   @UseGuards(AuthGuard)
   @Patch('archive/:id')
   async archive(
@@ -102,6 +122,7 @@ export class CompanyController {
     return company;
   }
 
+  @ApiResponse({ example: companyData })
   @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('file', UploadService.setFileOptions(UploadPath.Logo)),
