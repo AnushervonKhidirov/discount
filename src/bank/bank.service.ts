@@ -48,13 +48,13 @@ export class BankService {
   }
 
   async update(
-    id: number,
+    where: Prisma.BankWhereUniqueInput,
     { name, logoUrl, archived }: UpdateBankDto,
   ): ReturnPromiseWithErr<Bank> {
     try {
       const bank = await this.prisma.bank.update({
+        where,
         data: { name, logoUrl, archived },
-        where: { id },
       });
       return [bank, null];
     } catch (err) {
@@ -62,9 +62,11 @@ export class BankService {
     }
   }
 
-  async archive(id: number): ReturnPromiseWithErr<Bank> {
+  async archive(
+    where: Prisma.BankWhereUniqueInput,
+  ): ReturnPromiseWithErr<Bank> {
     try {
-      const [bank, err] = await this.update(id, { archived: true });
+      const [bank, err] = await this.update(where, { archived: true });
       if (err) throw err;
       return [bank, null];
     } catch (err) {
@@ -72,9 +74,11 @@ export class BankService {
     }
   }
 
-  async unArchive(id: number): ReturnPromiseWithErr<Bank> {
+  async unArchive(
+    where: Prisma.BankWhereUniqueInput,
+  ): ReturnPromiseWithErr<Bank> {
     try {
-      const [bank, err] = await this.update(id, { archived: false });
+      const [bank, err] = await this.update(where, { archived: false });
       if (err) throw err;
       return [bank, null];
     } catch (err) {
@@ -82,21 +86,24 @@ export class BankService {
     }
   }
 
-  async delete(id: number): ReturnPromiseWithErr<Bank> {
+  async delete(where: Prisma.BankWhereUniqueInput): ReturnPromiseWithErr<Bank> {
     try {
-      const [_, err] = await this.findOne({ id });
+      const [_, err] = await this.findOne(where);
       if (err) throw err;
 
-      const bank = await this.prisma.bank.delete({ where: { id } });
+      const bank = await this.prisma.bank.delete({ where });
       return [bank, null];
     } catch (err) {
       return exceptionHandler(err);
     }
   }
 
-  async uploadLogo(id: number, file: File): ReturnPromiseWithErr<Bank> {
+  async uploadLogo(
+    where: Prisma.BankWhereUniqueInput,
+    file: File,
+  ): ReturnPromiseWithErr<Bank> {
     try {
-      const [bank, err] = await this.findOne({ id });
+      const [bank, err] = await this.findOne(where);
       if (err) throw err;
 
       const bankImageName = `${bank.name.replaceAll(' ', '_')}_id_${bank.id}`;
@@ -109,7 +116,7 @@ export class BankService {
 
       if (logoErr) throw logoErr;
 
-      const [updatedBank, updateErr] = await this.update(id, { logoUrl });
+      const [updatedBank, updateErr] = await this.update(where, { logoUrl });
       if (updateErr) throw updateErr;
 
       return [updatedBank, null];
