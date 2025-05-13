@@ -1,23 +1,74 @@
+import type { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 
-import { access, writeFile, mkdir, unlink } from 'fs/promises';
-import { join } from 'path';
 import {
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
-import { UploadFileDto } from './dto/upload-file.dto';
+
+import { diskStorage } from 'multer';
+import { fileTypeFromFile, FileTypeResult } from 'file-type';
+import { access, unlink } from 'fs/promises';
+import { join, extname } from 'path';
+import { v4 as uuid } from 'uuid';
 
 import { exceptionHandler } from '@helper/exception.helper';
 
+const validMimeTypes = ['image/png', 'image/jpg', 'image.jpeg'];
+const uploadPath = join(process.cwd(), 'uploads');
+
 @Injectable()
 export class UploadService {
-  private readonly uploadPath = join(process.cwd(), '..', 'uploads');
+  static setFileOptions(directory: string): MulterOptions {
+    return {
+      storage: diskStorage({
+        destination: join(uploadPath, directory),
+        filename(_, file, callback) {
+          const fileExtension = extname(file.originalname);
+          const fileName = uuid() + fileExtension;
+          callback(null, fileName);
+        },
+      }),
+      fileFilter(_, file, callback) {
+        if (!validMimeTypes.includes(file.mimetype)) {
+          callback(
+            new BadRequestException('File must be a png, jpg/jpeg'),
+            false,
+          );
+        }
+
+        callback(null, true);
+      },
+      limits: { files: 1, fileSize: undefined },
+    };
+  }
+
+  async checkFileContent({
+    path,
+    fileName,
+  }: {
+    path: string;
+    fileName: string;
+  }): ReturnPromiseWithErr<FileTypeResult> {
+    const filePath = join(uploadPath, path, fileName);
+    const result = await fileTypeFromFile(filePath);
+
+    if (!result) {
+      await unlink(filePath);
+
+      return [
+        null,
+        new BadRequestException("File content doesn't match extension!"),
+      ];
+    }
+
+    return [result, null];
+  }
 
   async getPath(path: string, fileName: string): ReturnPromiseWithErr<string> {
     try {
-      const filePath = join(this.uploadPath, path, fileName);
+      const filePath = join(uploadPath, path, fileName);
       const isExist = await this.exists(filePath);
 
       if (!isExist) throw new NotFoundException();
@@ -26,47 +77,6 @@ export class UploadService {
     } catch (err) {
       return exceptionHandler(err);
     }
-  }
-
-  async create({
-    file,
-    path,
-    fileName,
-  }: UploadFileDto): ReturnPromiseWithErr<string> {
-    try {
-      const format = file.originalname.split('.').at(-1);
-
-      if (!format) {
-        throw new InternalServerErrorException('Unable to save file');
-      }
-
-      const filePlacementPath = join(this.uploadPath, path);
-      await this.createFolderIfNotExist(filePlacementPath);
-
-      const name = `${fileName}.${format}`;
-
-      await writeFile(join(filePlacementPath, name), file.buffer);
-      return [join(path, name), null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
-  }
-
-  async delete(path: string, fileName: string): ReturnPromiseWithErr<unknown> {
-    try {
-      const fullPath = join(this.uploadPath, path, fileName);
-      const isExist = await this.exists(fullPath);
-      if (!isExist) throw new NotFoundException('File not found');
-      await unlink(fullPath);
-      return [{}, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
-  }
-
-  private async createFolderIfNotExist(path: string) {
-    const isFolderExist = await this.exists(path);
-    if (!isFolderExist) await mkdir(path, { recursive: true });
   }
 
   private async exists(path: string) {
