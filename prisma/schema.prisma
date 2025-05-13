@@ -35,18 +35,20 @@ model Token {
 }
 
 model Company {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique @db.VarChar(50)
-  about     String?   @db.MediumText()
-  logoUrl   String?   @map("logo_url") @db.VarChar(255)
-  verified  Boolean   @default(false)
-  archived  Boolean   @default(false)
-  userId    Int       @map("user_id")
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  benefit   Benefit[]
-  store     Store[]
+  id         Int       @id @default(autoincrement())
+  name       String    @unique @db.VarChar(50)
+  about      String?   @db.Text()
+  logoUrl    String?   @map("logo_url") @db.VarChar(255)
+  verified   Boolean   @default(false)
+  archived   Boolean   @default(false)
+  userId     Int       @map("user_id")
+  categoryId Int?      @map("category_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category? @relation(fields: [categoryId], references: [id])
+  benefit    Benefit[]
+  store      Store[]
 
   @@map("companies")
 }
@@ -67,7 +69,7 @@ model Benefit {
   id        Int         @id @default(autoincrement())
   type      BenefitType
   size      Int         @db.TinyInt()
-  message   String?     @db.MediumText()
+  message   String?     @db.Text()
   startAt   DateTime    @map("start_at") @db.DateTime()
   endAt     DateTime    @map("end_at") @db.DateTime()
   archived  Boolean     @default(false)
@@ -100,8 +102,9 @@ model Store {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  value String @db.VarChar(40)
+  id      Int       @id @default(autoincrement())
+  value   String    @db.VarChar(40)
+  Company Company[]
 
   @@map("categories")
 }
