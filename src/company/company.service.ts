@@ -17,7 +17,10 @@ export class CompanyService {
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const company = await this.prisma.company.findUnique({ where });
+      const company = await this.prisma.company.findUnique({
+        where,
+        include: { category: true },
+      });
       if (!company) throw new NotFoundException('Company not found');
       return [company, null];
     } catch (err) {
@@ -29,7 +32,10 @@ export class CompanyService {
     where?: Prisma.CompanyWhereInput,
   ): ReturnPromiseWithErr<Company[]> {
     try {
-      const companies = await this.prisma.company.findMany({ where });
+      const companies = await this.prisma.company.findMany({
+        where,
+        include: { category: true },
+      });
       return [companies, null];
     } catch (err) {
       return exceptionHandler(err);
@@ -43,6 +49,7 @@ export class CompanyService {
     try {
       const companies = await this.prisma.company.create({
         data: { name, about, categoryId, userId },
+        include: { category: true },
       });
       return [companies, null];
     } catch (err) {
@@ -56,8 +63,9 @@ export class CompanyService {
   ): ReturnPromiseWithErr<Company> {
     try {
       const company = await this.prisma.company.update({
-        data: { name, about, categoryId, logoUrl, archived },
         where,
+        data: { name, about, categoryId, logoUrl, archived },
+        include: { category: true },
       });
 
       return [company, null];
@@ -89,7 +97,10 @@ export class CompanyService {
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const companies = await this.prisma.company.delete({ where });
+      const companies = await this.prisma.company.delete({
+        where,
+        include: { category: true },
+      });
       return [companies, null];
     } catch (err) {
       return exceptionHandler(err);
