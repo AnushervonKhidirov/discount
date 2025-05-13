@@ -8,7 +8,6 @@ import { CreateBankDto } from './dto/create-bank.dto';
 import { UpdateBankDto } from './dto/update-bank.dto';
 
 import { exceptionHandler } from '@helper/exception.helper';
-import { UploadPath } from 'src/common/constant/upload';
 
 @Injectable()
 export class BankService {
@@ -65,25 +64,20 @@ export class BankService {
   async archive(
     where: Prisma.BankWhereUniqueInput,
   ): ReturnPromiseWithErr<Bank> {
-    try {
-      const [bank, err] = await this.update(where, { archived: true });
-      if (err) throw err;
-      return [bank, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
+    return await this.update(where, { archived: true });
   }
 
   async unArchive(
     where: Prisma.BankWhereUniqueInput,
   ): ReturnPromiseWithErr<Bank> {
-    try {
-      const [bank, err] = await this.update(where, { archived: false });
-      if (err) throw err;
-      return [bank, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
+    return await this.update(where, { archived: false });
+  }
+
+  async uploadLogo(
+    where: Prisma.BankWhereUniqueInput,
+    logoUrl: string,
+  ): ReturnPromiseWithErr<Bank> {
+    return await this.update(where, { logoUrl });
   }
 
   async delete(where: Prisma.BankWhereUniqueInput): ReturnPromiseWithErr<Bank> {
@@ -93,33 +87,6 @@ export class BankService {
 
       const bank = await this.prisma.bank.delete({ where });
       return [bank, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
-  }
-
-  async uploadLogo(
-    where: Prisma.BankWhereUniqueInput,
-    file: Express.Multer.File,
-  ): ReturnPromiseWithErr<Bank> {
-    try {
-      const [bank, err] = await this.findOne(where);
-      if (err) throw err;
-
-      const bankImageName = `${bank.name.replaceAll(' ', '_')}_id_${bank.id}`;
-
-      const [logoUrl, logoErr] = await this.uploadService.create({
-        file,
-        path: UploadPath.Logo,
-        fileName: bankImageName,
-      });
-
-      if (logoErr) throw logoErr;
-
-      const [updatedBank, updateErr] = await this.update(where, { logoUrl });
-      if (updateErr) throw updateErr;
-
-      return [updatedBank, null];
     } catch (err) {
       return exceptionHandler(err);
     }
