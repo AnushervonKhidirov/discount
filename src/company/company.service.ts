@@ -4,19 +4,14 @@ import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UploadService } from 'src/upload/upload.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 import { exceptionHandler } from '@helper/exception.helper';
-import { UploadPath } from 'src/common/constant/upload';
 
 @Injectable()
 export class CompanyService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly uploadService: UploadService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(
     where: Prisma.CompanyWhereUniqueInput,
@@ -61,7 +56,7 @@ export class CompanyService {
   ): ReturnPromiseWithErr<Company> {
     try {
       const company = await this.prisma.company.update({
-        data: { name, about, categoryId, logoUrl },
+        data: { name, about, categoryId, logoUrl, archived },
         where,
       });
 
@@ -74,25 +69,20 @@ export class CompanyService {
   async archive(
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
-    try {
-      const [company, err] = await this.update(where, { archived: true });
-      if (err) throw err;
-      return [company, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
+    return await this.update(where, { archived: true });
   }
 
   async unArchive(
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
-    try {
-      const [company, err] = await this.update(where, { archived: false });
-      if (err) throw err;
-      return [company, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
+    return await this.update(where, { archived: false });
+  }
+
+  async uploadLogo(
+    where: Prisma.CompanyWhereUniqueInput,
+    logoUrl: string,
+  ): ReturnPromiseWithErr<Company> {
+    return await this.update(where, { logoUrl });
   }
 
   async delete(
@@ -101,35 +91,6 @@ export class CompanyService {
     try {
       const companies = await this.prisma.company.delete({ where });
       return [companies, null];
-    } catch (err) {
-      return exceptionHandler(err);
-    }
-  }
-
-  async uploadLogo(
-    where: Prisma.CompanyWhereUniqueInput,
-    file: Express.Multer.File,
-  ): ReturnPromiseWithErr<Company> {
-    try {
-      const [company, err] = await this.findOne(where);
-      if (err) throw err;
-
-      const companyImageName = `${company.name.replaceAll(' ', '_')}_id_${company.id}`;
-
-      const [logoUrl, logoErr] = await this.uploadService.create({
-        file,
-        path: UploadPath.Logo,
-        fileName: companyImageName,
-      });
-
-      if (logoErr) throw logoErr;
-
-      const updatedCompany = await this.prisma.company.update({
-        data: { logoUrl },
-        where,
-      });
-
-      return [updatedCompany, null];
     } catch (err) {
       return exceptionHandler(err);
     }

@@ -19,13 +19,19 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+import { UploadService } from 'src/upload/upload.service';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
+import { UploadPath } from 'src/common/constant/upload';
+
 @Controller('companies')
 export class CompanyController {
-  constructor(private readonly companyService: CompanyService) {}
+  constructor(
+    private readonly uploadService: UploadService,
+    private readonly companyService: CompanyService,
+  ) {}
 
   @Get()
   async findMany() {
@@ -97,19 +103,28 @@ export class CompanyController {
   }
 
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', UploadService.setFileOptions(UploadPath.Logo)),
+  )
   @Post('upload-logo/:id')
   async uploadLogo(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
     @Req() request: Request,
   ) {
+    const [_, fileContentErr] = await this.uploadService.checkFileContent({
+      path: UploadPath.Logo,
+      fileName: file.filename,
+    });
+
+    if (fileContentErr) throw fileContentErr;
+
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
     const [company, err] = await this.companyService.uploadLogo(
       { id, userId: +userPayload.sub },
-      file,
+      file.filename,
     );
 
     if (err) throw err;
