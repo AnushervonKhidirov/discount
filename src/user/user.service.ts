@@ -64,7 +64,7 @@ export class UserService {
   }
 
   async update(
-    id: number,
+    where: Prisma.UserWhereUniqueInput,
     { username, password, firstName, lastName }: UpdateUserDto,
   ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
@@ -72,7 +72,7 @@ export class UserService {
 
       const user = await this.prisma.user.update({
         data: { username, firstName, lastName, password: hashedPassword },
-        where: { id },
+        where,
         omit: { password: true },
       });
 
@@ -82,11 +82,13 @@ export class UserService {
     }
   }
 
-  async archive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
+  async archive(
+    where: Prisma.UserWhereUniqueInput,
+  ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const user = await this.prisma.user.update({
+        where,
         data: { archived: true },
-        where: { id },
         omit: { password: true },
       });
 
@@ -96,11 +98,13 @@ export class UserService {
     }
   }
 
-  async unArchive(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
+  async unArchive(
+    where: Prisma.UserWhereUniqueInput,
+  ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const user = await this.prisma.user.update({
+        where,
         data: { archived: false },
-        where: { id },
         omit: { password: true },
       });
 
@@ -110,10 +114,12 @@ export class UserService {
     }
   }
 
-  async delete(id: number): ReturnPromiseWithErr<Omit<User, 'password'>> {
+  async delete(
+    where: Prisma.UserWhereUniqueInput,
+  ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
       const deletedUser = await this.prisma.user.delete({
-        where: { id },
+        where,
         omit: { password: true },
       });
 

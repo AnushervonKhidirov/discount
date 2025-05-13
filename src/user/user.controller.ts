@@ -59,7 +59,7 @@ export class UserController {
     if (!userPayload) throw new UnauthorizedException();
 
     const [user, err] = await this.userService.update(
-      +userPayload.sub,
+      { id: +userPayload.sub },
       updateUserDto,
     );
 
@@ -74,7 +74,9 @@ export class UserController {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [user, err] = await this.userService.archive(+userPayload.sub);
+    const [user, err] = await this.userService.archive({
+      id: +userPayload.sub,
+    });
     if (err) throw err;
 
     return user;
@@ -87,7 +89,9 @@ export class UserController {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [user, err] = await this.userService.unArchive(+userPayload.sub);
+    const [user, err] = await this.userService.unArchive({
+      id: +userPayload.sub,
+    });
     if (err) throw err;
 
     return user;
