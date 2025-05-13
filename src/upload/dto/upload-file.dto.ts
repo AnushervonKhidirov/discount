@@ -1,6 +1,5 @@
-import { CreateFileDto } from './create-file.dto';
-
-export class UploadFileDto extends CreateFileDto {
+export class UploadFileDto {
+  file: Express.Multer.File;
   path: string;
   fileName: string;
 }

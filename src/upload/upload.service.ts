@@ -34,7 +34,7 @@ export class UploadService {
     fileName,
   }: UploadFileDto): ReturnPromiseWithErr<string> {
     try {
-      const format = file.name.split('.').at(-1);
+      const format = file.originalname.split('.').at(-1);
 
       if (!format) {
         throw new InternalServerErrorException('Unable to save file');
@@ -43,10 +43,9 @@ export class UploadService {
       const filePlacementPath = join(this.uploadPath, path);
       await this.createFolderIfNotExist(filePlacementPath);
 
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
       const name = `${fileName}.${format}`;
 
-      await writeFile(join(filePlacementPath, name), fileBuffer);
+      await writeFile(join(filePlacementPath, name), file.buffer);
       return [join(path, name), null];
     } catch (err) {
       return exceptionHandler(err);
