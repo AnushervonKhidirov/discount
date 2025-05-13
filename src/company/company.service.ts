@@ -108,7 +108,7 @@ export class CompanyService {
 
   async uploadLogo(
     where: Prisma.CompanyWhereUniqueInput,
-    file: File,
+    file: Express.Multer.File,
   ): ReturnPromiseWithErr<Company> {
     try {
       const [company, err] = await this.findOne(where);

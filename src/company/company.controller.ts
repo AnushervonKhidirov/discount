@@ -13,7 +13,10 @@ import {
   ValidationPipe,
   UseGuards,
   UnauthorizedException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 import { CompanyService } from './company.service';
@@ -94,10 +97,11 @@ export class CompanyController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch('upload-logo/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload-logo/:id')
   async uploadLogo(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) { file }: { file: File },
+    @UploadedFile() file: Express.Multer.File,
     @Req() request: Request,
   ) {
     const userPayload: UserTokenPayload | undefined = request['user'];

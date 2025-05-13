@@ -100,7 +100,7 @@ export class BankService {
 
   async uploadLogo(
     where: Prisma.BankWhereUniqueInput,
-    file: File,
+    file: Express.Multer.File,
   ): ReturnPromiseWithErr<Bank> {
     try {
       const [bank, err] = await this.findOne(where);
