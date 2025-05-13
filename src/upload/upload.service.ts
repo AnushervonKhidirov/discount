@@ -81,8 +81,6 @@ export class UploadService {
 
   private async exists(path: string) {
     try {
-      console.log(path);
-
       await access(path);
       return true;
     } catch {
