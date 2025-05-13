@@ -9,6 +9,7 @@ import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 import { BankModule } from './bank/bank.module';
 import { UploadModule } from './upload/upload.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UploadModule } from './upload/upload.module';
     ScheduledTasksModule,
     BankModule,
     UploadModule,
+    CompanyModule,
   ],
 })
 export class AppModule {}
