@@ -19,12 +19,12 @@ Table users_tokens {
 Table companies {
   id int [primary key]
   name varchar [not null]
-  category int [ref: > categories.id, not null]
   about text
   logo_url varchar [note: 'path to company logo image']
   verified bool [not null, note: 'default false']
   archived bool [not null, note: 'default false']
   user_id int [ref: > users.id, not null]
+  category_id int [ref: > categories.id, not null]
   created_at timestamp
   updated_at timestamp
 }
