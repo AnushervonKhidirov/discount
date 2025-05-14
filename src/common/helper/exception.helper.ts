@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 
 export function exceptionHandler(err: unknown): [null, HttpException] {
-  if (err instanceof PrismaClientKnownRequestError) {
+  if (isPrismaError(err)) {
     const exception = prismaException(err);
     if (exception) return [null, exception];
   }
@@ -36,4 +36,9 @@ function getFieldName(field?: unknown, additionalText?: string) {
   if (typeof field !== 'string' || field.length === 0) return;
   const firstLatter = field[0]?.toUpperCase();
   return `${firstLatter}${field.slice(1)} ${additionalText}`.replace('_id', '');
+}
+
+function isPrismaError(err: unknown): err is PrismaClientKnownRequestError {
+  const isPrismaError = err?.constructor.name.includes('Prisma') ?? false;
+  return isPrismaError;
 }
