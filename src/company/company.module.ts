@@ -9,5 +9,6 @@ import { CompanyController } from './company.controller';
   imports: [PrismaModule, TokenModule, UploadModule],
   providers: [CompanyService],
   controllers: [CompanyController],
+  exports: [CompanyService],
 })
 export class CompanyModule {}
