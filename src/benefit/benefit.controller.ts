@@ -1,0 +1,132 @@
+import type { Request } from 'express';
+import type { UserTokenPayload } from 'src/token/type/token.type';
+
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Body,
+  Req,
+  ParseIntPipe,
+  ValidationPipe,
+  UseGuards,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { CompanyService } from 'src/company/company.service';
+import { BenefitService } from './benefit.service';
+import { CreateBenefitDto } from './dto/create-benefit.dto';
+import { UpdateBenefitDto } from './dto/update-benefit.dto';
+
+const benefit = {};
+
+@Controller('benefits')
+export class BenefitController {
+  constructor(
+    private readonly benefitService: BenefitService,
+    private readonly companyService: CompanyService,
+  ) {}
+
+  @ApiResponse({ example: [benefit] })
+  @Get()
+  async findMany() {
+    const [benefits, err] = await this.benefitService.findMany();
+    if (err) throw err;
+    return benefits;
+  }
+
+  @ApiResponse({ example: benefit })
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const [benefit, err] = await this.benefitService.findOne({ id });
+    if (err) throw err;
+    return benefit;
+  }
+
+  @ApiResponse({ example: benefit })
+  @UseGuards(AuthGuard)
+  @Post()
+  async create(
+    @Body(new ValidationPipe()) createBenefitDto: CreateBenefitDto,
+    @Req() request: Request,
+  ) {
+    const userPayload = this.getUserPayload(request);
+
+    const [_, companyErr] = await this.companyService.findOne({
+      id: createBenefitDto.companyId,
+      userId: +userPayload.sub,
+    });
+
+    if (companyErr) throw companyErr;
+
+    const [benefit, err] = await this.benefitService.create(createBenefitDto);
+    if (err) throw err;
+    return benefit;
+  }
+  @ApiResponse({ example: benefit })
+  @UseGuards(AuthGuard)
+  @Patch()
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe()) updateBenefitDto: UpdateBenefitDto,
+    @Req() request: Request,
+  ) {
+    const userPayload = this.getUserPayload(request);
+
+    const [benefit, err] = await this.benefitService.update(
+      {
+        id,
+        company: { userId: +userPayload },
+      },
+      updateBenefitDto,
+    );
+
+    if (err) throw err;
+    return benefit;
+  }
+
+  @ApiResponse({ example: benefit })
+  @UseGuards(AuthGuard)
+  @Patch()
+  async archive(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: Request,
+  ) {
+    const userPayload = this.getUserPayload(request);
+
+    const [benefit, err] = await this.benefitService.archive({
+      id,
+      company: { userId: +userPayload },
+    });
+
+    if (err) throw err;
+    return benefit;
+  }
+
+  @ApiResponse({ example: benefit })
+  @UseGuards(AuthGuard)
+  @Patch()
+  async unarchive(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: Request,
+  ) {
+    const userPayload = this.getUserPayload(request);
+
+    const [benefit, err] = await this.benefitService.unarchive({
+      id,
+      company: { userId: +userPayload },
+    });
+
+    if (err) throw err;
+    return benefit;
+  }
+
+  private getUserPayload(request: Request): UserTokenPayload {
+    const userPayload: UserTokenPayload | undefined = request['user'];
+    if (!userPayload) throw new UnauthorizedException();
+    return userPayload;
+  }
+}
