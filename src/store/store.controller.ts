@@ -100,9 +100,9 @@ export class StoreController {
 
     if (companyErr) throw companyErr;
 
-    const [stores, err] = await this.storeService.create(createStoreDto);
+    const [store, err] = await this.storeService.create(createStoreDto);
     if (err) throw err;
-    return stores;
+    return store;
   }
 
   @ApiResponse({ example: storeData })
