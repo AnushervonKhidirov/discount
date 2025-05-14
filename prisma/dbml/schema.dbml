@@ -1,0 +1,147 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id Int [pk, increment]
+  username String [unique, not null]
+  password String [not null]
+  firstName String
+  lastName String
+  role Role [not null, default: 'USER']
+  archived Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  tokens tokens [not null]
+  companies companies [not null]
+}
+
+Table tokens {
+  refreshToken String [pk]
+  userId Int [not null]
+  expiredAt DateTime [not null]
+  user users [not null]
+}
+
+Table companies {
+  id Int [pk, increment]
+  name String [unique, not null]
+  about String
+  logoUrl String
+  verified Boolean [not null, default: false]
+  archived Boolean [not null, default: false]
+  userId Int [not null]
+  categoryId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  category categories
+  benefits benefits [not null]
+  stores stores [not null]
+  countries countries [not null]
+}
+
+Table banks {
+  id Int [pk, increment]
+  name String [unique, not null]
+  logoUrl String
+  archived Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  benefits benefits [not null]
+}
+
+Table benefits {
+  id Int [pk, increment]
+  type BenefitType [not null]
+  size Int [not null]
+  message String
+  startAt DateTime [not null]
+  endAt DateTime [not null]
+  archived Boolean [not null, default: false]
+  companyId Int [not null]
+  bankId Int
+  promoCode String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  company companies [not null]
+  bank banks
+  stores stores [not null]
+}
+
+Table stores {
+  id Int [pk, increment]
+  companyId Int [not null]
+  countryId Int [not null]
+  cityId Int [not null]
+  address String [not null]
+  latitude String [not null]
+  longitude String [not null]
+  openAt String [not null]
+  closeAt String [not null]
+  archived Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  company companies [not null]
+  benefits benefits [not null]
+  country countries [not null]
+  city cities [not null]
+}
+
+Table categories {
+  id Int [pk, increment]
+  value String [not null]
+  companies companies [not null]
+}
+
+Table countries {
+  id Int [pk, increment]
+  value String [not null]
+  companies companies [not null]
+  store stores [not null]
+}
+
+Table cities {
+  id Int [pk, increment]
+  countryId Int [not null]
+  value String [not null]
+  store stores [not null]
+}
+
+Table CompanyToCountry {
+  countriesId Int [ref: > countries.id]
+  companiesId Int [ref: > companies.id]
+}
+
+Table BenefitToStore {
+  storesId Int [ref: > stores.id]
+  benefitsId Int [ref: > benefits.id]
+}
+
+Enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+Enum BenefitType {
+  DISCOUNT
+  CASHBACK
+  PROMO_CODE
+}
+
+Ref: tokens.userId > users.id [delete: Cascade]
+
+Ref: companies.userId > users.id [delete: Cascade]
+
+Ref: companies.categoryId > categories.id
+
+Ref: benefits.companyId > companies.id [delete: Cascade]
+
+Ref: benefits.bankId > banks.id [delete: Cascade]
+
+Ref: stores.companyId > companies.id [delete: Cascade]
+
+Ref: stores.countryId > countries.id
+
+Ref: stores.cityId > cities.id
