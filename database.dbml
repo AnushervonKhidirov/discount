@@ -86,6 +86,17 @@ Table categories {
   value varchar
 }
 
+Table countries {
+  id int [primary key]
+  value varchar
+}
+
+Table cities {
+  id int [primary key]
+  country_id int [ref: > countries.id, not null]
+  value varchar
+}
+
 enum role {
   USER
   ADMIN
