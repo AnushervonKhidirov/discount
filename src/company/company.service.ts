@@ -19,7 +19,7 @@ export class CompanyService {
     try {
       const company = await this.prisma.company.findUnique({
         where,
-        include: { category: true },
+        include: { category: true, countries: true },
       });
       if (!company) throw new NotFoundException('Company not found');
       return [company, null];
@@ -34,7 +34,7 @@ export class CompanyService {
     try {
       const companies = await this.prisma.company.findMany({
         where,
-        include: { category: true },
+        include: { category: true, countries: true },
       });
       return [companies, null];
     } catch (err) {
@@ -44,13 +44,20 @@ export class CompanyService {
 
   async create(
     userId: number,
-    { name, about, categoryId }: CreateCompanyDto,
+    { name, about, categoryId, countryIds }: CreateCompanyDto,
   ): ReturnPromiseWithErr<Company> {
     try {
       const companies = await this.prisma.company.create({
-        data: { name, about, categoryId, userId },
-        include: { category: true },
+        data: {
+          name,
+          about,
+          categoryId,
+          userId,
+          countries: { connect: countryIds.map((id) => ({ id })) },
+        },
+        include: { category: true, countries: true },
       });
+
       return [companies, null];
     } catch (err) {
       return exceptionHandler(err);
@@ -65,7 +72,7 @@ export class CompanyService {
       const company = await this.prisma.company.update({
         where,
         data: { name, about, categoryId, logoUrl, archived },
-        include: { category: true },
+        include: { category: true, countries: true },
       });
 
       return [company, null];
@@ -99,7 +106,7 @@ export class CompanyService {
     try {
       const companies = await this.prisma.company.delete({
         where,
-        include: { category: true },
+        include: { category: true, countries: true },
       });
       return [companies, null];
     } catch (err) {
