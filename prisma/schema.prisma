@@ -88,16 +88,21 @@ model Benefit {
 
 model Store {
   id        Int       @id @default(autoincrement())
+  companyId Int       @map("company_id")
+  countryId Int       @map("country_id")
+  cityId    Int       @map("city_id")
+  address   String
   latitude  Float
   longitude Float
   openAt    String    @map("open_at") @db.VarChar(5)
   closeAt   String    @map("close_at") @db.VarChar(5)
   archived  Boolean   @default(false)
-  companyId Int       @map("company_id")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   benefits  Benefit[]
+  country   Country   @relation(fields: [countryId], references: [id])
+  city      City      @relation(fields: [cityId], references: [id])
 
   @@map("stores")
 }
@@ -114,14 +119,16 @@ model Country {
   id        Int       @id @default(autoincrement())
   value     String    @db.VarChar(60)
   companies Company[]
+  store     Store[]
 
   @@map("countries")
 }
 
 model City {
-  id        Int    @id @default(autoincrement())
-  countryId Int    @map("country_id")
-  value     String @db.VarChar(40)
+  id        Int     @id @default(autoincrement())
+  countryId Int     @map("country_id")
+  value     String  @db.VarChar(40)
+  store     Store[]
 
   @@map("cities")
 }

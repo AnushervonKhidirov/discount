@@ -40,15 +40,15 @@ Table banks {
 
 Table stores {
   id int [primary key]
-  country varchar [not null]
-  city varchar [not null]
+  company_id int [ref: > companies.id, not null]
+  country_id int [not null]
+  city_id int [not null]
   address varchar [not null]
   latitude float [not null]
   longitude float [not null]
   open_at time
   close_at time
   archived bool [not null, note: 'default false']
-  company_id int [ref: > companies.id, not null]
   created_at timestamp
   updated_at timestamp
 }
