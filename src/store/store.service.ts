@@ -11,7 +11,7 @@ import { exceptionHandler } from '@helper/exception.helper';
 
 @Injectable()
 export class StoreService {
-  private readonly include: Prisma.StoreDeleteArgs['include'] = {
+  private readonly include: Prisma.StoreDefaultArgs['include'] = {
     city: true,
     country: true,
     company: true,
