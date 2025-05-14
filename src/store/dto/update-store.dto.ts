@@ -6,5 +6,5 @@ export class UpdateStoreDto extends PartialType(CreateStoreDto) {
   @ApiProperty({ example: true })
   @IsBoolean()
   @ValidateIf(({ archived }) => archived !== undefined)
-  archived: boolean;
+  archived?: boolean;
 }
