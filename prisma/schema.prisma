@@ -49,6 +49,7 @@ model Company {
   category   Category? @relation(fields: [categoryId], references: [id])
   benefits   Benefit[]
   stores     Store[]
+  countries  Country[]
 
   @@map("companies")
 }
@@ -110,8 +111,9 @@ model Category {
 }
 
 model Country {
-  id    Int    @id @default(autoincrement())
-  value String @db.VarChar(60)
+  id        Int       @id @default(autoincrement())
+  value     String    @db.VarChar(60)
+  companies Company[]
 
   @@map("countries")
 }
