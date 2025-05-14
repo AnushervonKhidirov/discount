@@ -53,7 +53,7 @@ export class StoreService {
   async create(createStoreDto: CreateStoreDto): ReturnPromiseWithErr<Store> {
     try {
       const store = await this.prisma.store.create({
-        data: createStoreDto,
+        data: this.expandCreateDto(createStoreDto),
         include: this.include,
       });
 
@@ -70,7 +70,7 @@ export class StoreService {
     try {
       const store = await this.prisma.store.update({
         where,
-        data: updateStoreDto,
+        data: this.expandUpdateDto(updateStoreDto),
         include: this.include,
       });
 
@@ -105,5 +105,32 @@ export class StoreService {
     } catch (err) {
       return exceptionHandler(err);
     }
+  }
+
+  private expandCreateDto(createStoreDto: CreateStoreDto): CreateStoreDto {
+    return {
+      companyId: createStoreDto.companyId,
+      countryId: createStoreDto.countryId,
+      cityId: createStoreDto.cityId,
+      address: createStoreDto.address,
+      latitude: createStoreDto.latitude,
+      longitude: createStoreDto.longitude,
+      openAt: createStoreDto.openAt,
+      closeAt: createStoreDto.closeAt,
+    };
+  }
+
+  private expandUpdateDto(updateStoreDto: UpdateStoreDto): UpdateStoreDto {
+    return {
+      companyId: updateStoreDto.companyId,
+      countryId: updateStoreDto.countryId,
+      cityId: updateStoreDto.cityId,
+      address: updateStoreDto.address,
+      latitude: updateStoreDto.latitude,
+      longitude: updateStoreDto.longitude,
+      openAt: updateStoreDto.openAt,
+      closeAt: updateStoreDto.closeAt,
+      archived: updateStoreDto.archived,
+    };
   }
 }
