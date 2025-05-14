@@ -24,7 +24,7 @@ export class BankController {
   }
 
   @ApiResponse({ example: bank })
-  @Get('/:id')
+  @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [bank, err] = await this.bankService.findOne({ id });
     if (err) throw err;

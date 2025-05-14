@@ -42,7 +42,7 @@ export class UserController {
   }
 
   @ApiResponse({ schema: { example: user } })
-  @Get('/:id')
+  @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [user, err] = await this.userService.findOne({ id });
     if (err) throw err;
@@ -70,7 +70,7 @@ export class UserController {
 
   @ApiResponse({ schema: { example: user } })
   @UseGuards(AuthGuard)
-  @Patch('/archive')
+  @Patch('archive')
   async arcive(@Req() request: Request) {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
@@ -85,7 +85,7 @@ export class UserController {
 
   @ApiResponse({ schema: { example: user } })
   @UseGuards(AuthGuard)
-  @Patch('/unarchive')
+  @Patch('unarchive')
   async unArchive(@Req() request: Request) {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();

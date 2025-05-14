@@ -26,7 +26,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiResponse({ schema: { example: tokens }, status: 200 })
-  @Post('/sign-up')
+  @Post('sign-up')
   @HttpCode(200)
   async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
     const [token, err] = await this.authService.signUp(createUserDto);
@@ -35,7 +35,7 @@ export class AuthController {
   }
 
   @ApiResponse({ schema: { example: tokens }, status: 200 })
-  @Post('/sign-in')
+  @Post('sign-in')
   @HttpCode(200)
   async signIn(@Body(new ValidationPipe()) signInDto: SignInDto) {
     const [token, err] = await this.authService.signIn(signInDto);
@@ -43,14 +43,14 @@ export class AuthController {
     return token;
   }
 
-  @Post('/sign-out')
+  @Post('sign-out')
   @HttpCode(200)
   async signOut(@Body(new ValidationPipe()) signOutDto: SignOutDto) {
     const err = await this.authService.signOut(signOutDto);
     if (err) throw err;
   }
 
-  @Post('/sign-out-everywhere')
+  @Post('sign-out-everywhere')
   @HttpCode(200)
   async signOutEverywhere(@Body(new ValidationPipe()) signOutDto: SignOutDto) {
     const err = await this.authService.signOutEverywhere(signOutDto);
@@ -58,7 +58,7 @@ export class AuthController {
   }
 
   @ApiResponse({ schema: { example: tokens }, status: 200 })
-  @Post('/refresh-token')
+  @Post('refresh-token')
   @HttpCode(200)
   async refreshToken(
     @Body(new ValidationPipe()) refreshTokenDto: RefreshTokenDto,
