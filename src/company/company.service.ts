@@ -87,7 +87,7 @@ export class CompanyService {
     return await this.update(where, { archived: true });
   }
 
-  async unArchive(
+  async unarchive(
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
     return await this.update(where, { archived: false });

@@ -86,11 +86,11 @@ export class UserController {
   @ApiResponse({ schema: { example: user } })
   @UseGuards(AuthGuard)
   @Patch('unarchive')
-  async unArchive(@Req() request: Request) {
+  async unarchive(@Req() request: Request) {
     const userPayload: UserTokenPayload | undefined = request['user'];
     if (!userPayload) throw new UnauthorizedException();
 
-    const [user, err] = await this.userService.unArchive({
+    const [user, err] = await this.userService.unarchive({
       id: +userPayload.sub,
     });
     if (err) throw err;

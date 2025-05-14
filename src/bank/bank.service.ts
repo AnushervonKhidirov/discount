@@ -67,7 +67,7 @@ export class BankService {
     return await this.update(where, { archived: true });
   }
 
-  async unArchive(
+  async unarchive(
     where: Prisma.BankWhereUniqueInput,
   ): ReturnPromiseWithErr<Bank> {
     return await this.update(where, { archived: false });

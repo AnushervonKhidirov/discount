@@ -157,7 +157,7 @@ export class StoreController {
   @ApiResponse({ example: storeData })
   @UseGuards(AuthGuard)
   @Patch('unarchive/:id')
-  async unArchive(
+  async unarchive(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) updateStoreDto: UpdateStoreDto,
     @Req() request: Request,
@@ -167,7 +167,7 @@ export class StoreController {
     }
 
     const userPayload = this.getUserPayload(request);
-    const [store, err] = await this.storeService.unArchive({
+    const [store, err] = await this.storeService.unarchive({
       id,
       companyId: updateStoreDto.companyId,
       company: { userId: +userPayload.sub },

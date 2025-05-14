@@ -86,7 +86,7 @@ export class StoreService {
     return await this.update(where, { archived: true });
   }
 
-  async unArchive(
+  async unarchive(
     where: Prisma.StoreWhereUniqueInput,
   ): ReturnPromiseWithErr<Store> {
     return await this.update(where, { archived: false });

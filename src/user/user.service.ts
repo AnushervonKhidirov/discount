@@ -98,7 +98,7 @@ export class UserService {
     }
   }
 
-  async unArchive(
+  async unarchive(
     where: Prisma.UserWhereUniqueInput,
   ): ReturnPromiseWithErr<Omit<User, 'password'>> {
     try {
