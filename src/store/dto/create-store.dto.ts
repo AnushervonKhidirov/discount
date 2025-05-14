@@ -20,13 +20,13 @@ export class CreateStoreDto {
   @IsString()
   address: string;
 
-  @ApiProperty({ example: 38.57882399486239 })
+  @ApiProperty({ example: '38.57882399486239' })
   @IsLatitude()
-  latitude: number;
+  latitude: string;
 
-  @ApiProperty({ example: 68.78637547795134 })
+  @ApiProperty({ example: '68.78637547795134' })
   @IsLongitude()
-  longitude: number;
+  longitude: string;
 
   @ApiProperty({ example: '8:00' })
   @IsMilitaryTime()
