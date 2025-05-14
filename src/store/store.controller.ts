@@ -12,7 +12,6 @@ import {
   ParseIntPipe,
   ValidationPipe,
   UnauthorizedException,
-  BadRequestException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
@@ -113,15 +112,10 @@ export class StoreController {
     @Body(new ValidationPipe()) updateStoreDto: UpdateStoreDto,
     @Req() request: Request,
   ) {
-    if (typeof updateStoreDto.companyId !== 'number') {
-      throw new BadRequestException(['companyId must be a number']);
-    }
-
     const userPayload = this.getUserPayload(request);
     const [store, err] = await this.storeService.update(
       {
         id,
-        companyId: updateStoreDto.companyId,
         company: { userId: +userPayload.sub },
       },
       updateStoreDto,
@@ -136,17 +130,11 @@ export class StoreController {
   @Patch('archive/:id')
   async archive(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) updateStoreDto: UpdateStoreDto,
     @Req() request: Request,
   ) {
-    if (typeof updateStoreDto.companyId !== 'number') {
-      throw new BadRequestException(['companyId must be a number']);
-    }
-
     const userPayload = this.getUserPayload(request);
     const [store, err] = await this.storeService.archive({
       id,
-      companyId: updateStoreDto.companyId,
       company: { userId: +userPayload.sub },
     });
 
@@ -159,17 +147,11 @@ export class StoreController {
   @Patch('unarchive/:id')
   async unarchive(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) updateStoreDto: UpdateStoreDto,
     @Req() request: Request,
   ) {
-    if (typeof updateStoreDto.companyId !== 'number') {
-      throw new BadRequestException(['companyId must be a number']);
-    }
-
     const userPayload = this.getUserPayload(request);
     const [store, err] = await this.storeService.unarchive({
       id,
-      companyId: updateStoreDto.companyId,
       company: { userId: +userPayload.sub },
     });
 
