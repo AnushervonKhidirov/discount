@@ -13,7 +13,7 @@ services:
         restart: true
     volumes:
       - .:/usr/app
-      - ../uploads:/usr/uploads
+      - ./uploads:/usr/uploads
 
   dbadbmin:
     image: phpmyadmin:latest
@@ -42,4 +42,4 @@ services:
       retries: 5
       start_period: 5s
     volumes:
-      - ../db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
