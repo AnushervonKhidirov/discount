@@ -15,12 +15,52 @@ import {
   BadRequestException,
   UseGuards,
 } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { StoreService } from './store.service';
 import { CompanyService } from 'src/company/company.service';
 
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
+
+const storeData = [
+  {
+    id: 1,
+    companyId: 27,
+    countryId: 1,
+    cityId: 1,
+    address: 'Ayni street 48',
+    latitude: '21.23',
+    longitude: '21.23',
+    openAt: '08:00',
+    closeAt: '18:00',
+    archived: false,
+    createdAt: '2025-05-14T08:18:59.000Z',
+    updatedAt: '2025-05-14T08:18:59.000Z',
+    city: {
+      id: 1,
+      countryId: 1,
+      value: 'Dushanbe',
+    },
+    country: {
+      id: 1,
+      value: 'Tajikistan',
+    },
+    company: {
+      id: 27,
+      name: 'Gelos',
+      about: 'Gelos about',
+      logoUrl: null,
+      verified: false,
+      archived: false,
+      userId: 1,
+      categoryId: null,
+      createdAt: '2025-05-14T05:55:32.000Z',
+      updatedAt: '2025-05-14T05:55:32.000Z',
+    },
+    benefits: [],
+  },
+];
 
 @Controller('stores')
 export class StoreController {
@@ -29,6 +69,7 @@ export class StoreController {
     private readonly companyService: CompanyService,
   ) {}
 
+  @ApiResponse({ example: [storeData] })
   @Get()
   async findMany() {
     const [stores, err] = await this.storeService.findMany();
@@ -36,6 +77,7 @@ export class StoreController {
     return stores;
   }
 
+  @ApiResponse({ example: storeData })
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [stores, err] = await this.storeService.findOne({ id });
@@ -43,6 +85,7 @@ export class StoreController {
     return stores;
   }
 
+  @ApiResponse({ example: storeData })
   @UseGuards(AuthGuard)
   @Post()
   async create(
@@ -62,6 +105,7 @@ export class StoreController {
     return stores;
   }
 
+  @ApiResponse({ example: storeData })
   @UseGuards(AuthGuard)
   @Patch(':id')
   async update(
@@ -87,6 +131,7 @@ export class StoreController {
     return store;
   }
 
+  @ApiResponse({ example: storeData })
   @UseGuards(AuthGuard)
   @Patch('archive/:id')
   async archive(
@@ -109,6 +154,7 @@ export class StoreController {
     return store;
   }
 
+  @ApiResponse({ example: storeData })
   @UseGuards(AuthGuard)
   @Patch('unarchive/:id')
   async unArchive(
