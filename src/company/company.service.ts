@@ -66,12 +66,28 @@ export class CompanyService {
 
   async update(
     where: Prisma.CompanyWhereUniqueInput,
-    { name, about, categoryId, logoUrl, archived }: UpdateCompanyDto,
+    {
+      name,
+      about,
+      categoryId,
+      logoUrl,
+      archived,
+      countryIds,
+    }: UpdateCompanyDto,
   ): ReturnPromiseWithErr<Company> {
     try {
       const company = await this.prisma.company.update({
         where,
-        data: { name, about, categoryId, logoUrl, archived },
+        data: {
+          name,
+          about,
+          categoryId,
+          logoUrl,
+          archived,
+          countries: countryIds && {
+            connect: countryIds.map((id) => ({ id })),
+          },
+        },
         include: { category: true, countries: true },
       });
 
