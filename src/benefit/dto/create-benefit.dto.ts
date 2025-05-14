@@ -9,6 +9,7 @@ import {
   ValidateIf,
   Validate,
   IsNotEmpty,
+  IsArray,
 } from 'class-validator';
 import { $Enums } from '@prisma/client';
 import { BenefitTypeValidation } from '../validation/benefit-type.validation';
@@ -22,6 +23,12 @@ export class CreateBenefitDto {
   @ApiProperty({ example: 1 })
   @IsNumber()
   companyId: number;
+
+  @ApiProperty({ example: [1, 2] })
+  @IsArray({ always: true })
+  @IsNumber({}, { each: true })
+  @IsNotEmpty()
+  storeIds: number[];
 
   @ApiProperty({ example: 30 })
   @IsNumber()
