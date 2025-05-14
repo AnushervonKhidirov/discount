@@ -11,14 +11,12 @@ export class BenefitTypeValidation implements ValidatorConstraintInterface {
 
   validate(value: any, validationArguments?: ValidationArguments) {
     if (validationArguments) {
-      const body: {} = validationArguments.object;
-
       const isDiscount = value === $Enums.BenefitType.DISCOUNT;
       const isCashback = value === $Enums.BenefitType.CASHBACK;
       const isPromoCode = value === $Enums.BenefitType.PROMO_CODE;
 
-      const isContainBankId = 'bankId' in body;
-      const isContainPromoCode = 'promoCode' in body;
+      const isContainBankId = 'bankId' in validationArguments.object;
+      const isContainPromoCode = 'promoCode' in validationArguments.object;
 
       if (isCashback && isContainPromoCode) {
         this.message = `promoCode can only be used with type: ${$Enums.BenefitType.PROMO_CODE}`;
