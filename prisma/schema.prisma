@@ -19,8 +19,8 @@ model User {
   archived  Boolean   @default(false)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  tokens     Token[]
-  companies   Company[]
+  tokens    Token[]
+  companies Company[]
 
   @@map("users")
 }
@@ -47,8 +47,8 @@ model Company {
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   category   Category? @relation(fields: [categoryId], references: [id])
-  benefits    Benefit[]
-  stores      Store[]
+  benefits   Benefit[]
+  stores     Store[]
 
   @@map("companies")
 }
@@ -60,7 +60,7 @@ model Bank {
   archived  Boolean   @default(false)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  benefits   Benefit[]
+  benefits  Benefit[]
 
   @@map("banks")
 }
@@ -96,14 +96,14 @@ model Store {
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  benefits   Benefit[]
+  benefits  Benefit[]
 
   @@map("stores")
 }
 
 model Category {
-  id      Int       @id @default(autoincrement())
-  value   String    @db.VarChar(40)
+  id        Int       @id @default(autoincrement())
+  value     String    @db.VarChar(40)
   companies Company[]
 
   @@map("categories")
