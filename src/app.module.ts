@@ -11,6 +11,7 @@ import { BankModule } from './bank/bank.module';
 import { UploadModule } from './upload/upload.module';
 import { CompanyModule } from './company/company.module';
 import { StoreModule } from './store/store.module';
+import { BenefitModule } from './benefit/benefit.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { StoreModule } from './store/store.module';
     UploadModule,
     CompanyModule,
     StoreModule,
+    BenefitModule,
   ],
 })
 export class AppModule {}
