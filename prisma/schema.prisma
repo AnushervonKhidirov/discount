@@ -92,8 +92,8 @@ model Store {
   countryId Int       @map("country_id")
   cityId    Int       @map("city_id")
   address   String
-  latitude  Float
-  longitude Float
+  latitude  String
+  longitude String
   openAt    String    @map("open_at") @db.VarChar(5)
   closeAt   String    @map("close_at") @db.VarChar(5)
   archived  Boolean   @default(false)
