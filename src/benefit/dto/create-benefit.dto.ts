@@ -51,5 +51,5 @@ export class CreateBenefitDto {
   @ValidateIf(({ type }) => type === $Enums.BenefitType.PROMO_CODE)
   @IsString()
   @IsNotEmpty()
-  promoCode: string;
+  promoCode?: string;
 }
