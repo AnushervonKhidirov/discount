@@ -129,15 +129,14 @@ export class BenefitService {
 
   private expandCreateDto(
     createBenefitDto: CreateBenefitDto,
-  ): CreateBenefitDto {
+  ): Omit<CreateBenefitDto, 'storeIds'> {
     return {
       type: createBenefitDto.type,
       companyId: createBenefitDto.companyId,
-      storeIds: createBenefitDto.storeIds,
       size: createBenefitDto.size,
       message: createBenefitDto.message,
-      startAt: createBenefitDto.startAt,
-      endAt: createBenefitDto.endAt,
+      startAt: new Date(createBenefitDto.startAt),
+      endAt: new Date(createBenefitDto.endAt),
       promoCode: createBenefitDto.promoCode,
       bankId: createBenefitDto.bankId,
     };
@@ -148,11 +147,10 @@ export class BenefitService {
   ): UpdateBenefitDto {
     return {
       type: updateBenefitDto.type,
-      storeIds: updateBenefitDto.storeIds,
       size: updateBenefitDto.size,
       message: updateBenefitDto.message,
-      startAt: updateBenefitDto.startAt,
-      endAt: updateBenefitDto.endAt,
+      startAt: updateBenefitDto.startAt && new Date(updateBenefitDto.startAt),
+      endAt: updateBenefitDto.endAt && new Date(updateBenefitDto.endAt),
       promoCode: updateBenefitDto.promoCode,
       bankId: updateBenefitDto.bankId,
       archived: updateBenefitDto.archived,
