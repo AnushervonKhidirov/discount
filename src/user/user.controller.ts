@@ -42,6 +42,21 @@ export class UserController {
   }
 
   @ApiResponse({ schema: { example: user } })
+  @UseGuards(AuthGuard)
+  @Get('me')
+  async findMe(@Req() request: Request) {
+    const userPayload: UserTokenPayload | undefined = request['user'];
+    if (!userPayload) throw new UnauthorizedException();
+
+    const [user, err] = await this.userService.findOne({
+      id: +userPayload.sub,
+    });
+
+    if (err) throw err;
+    return user;
+  }
+
+  @ApiResponse({ schema: { example: user } })
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const [user, err] = await this.userService.findOne({ id });
