@@ -5,6 +5,7 @@ import type { Tokens, UserTokenPayload } from 'src/token/type/token.type';
 
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -27,10 +28,20 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): ReturnPromiseWithErr<Tokens> {
+  async signUp({
+    username,
+    password,
+  }: CreateUserDto): ReturnPromiseWithErr<Tokens> {
     try {
-      const [user, err] = await this.userService.create(createUserDto);
-      if (err) throw err;
+      const [user, err] = await this.userService.create({ username, password });
+
+      if (err) {
+        if (err.getStatus() === 409) {
+          throw new ConflictException('User already exists');
+        }
+
+        throw err;
+      }
 
       const [token, tokenErr] = await this.createTokens(user);
       if (tokenErr) throw tokenErr;
@@ -63,9 +74,7 @@ export class AuthService {
     }
   }
 
-  async signOut({
-    refreshToken,
-  }: SignOutDto): Promise<void | HttpException> {
+  async signOut({ refreshToken }: SignOutDto): Promise<void | HttpException> {
     try {
       const [_, tokenErr] = this.tokenService.verifyRefreshToken(refreshToken);
       if (tokenErr) throw tokenErr;
