@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsBoolean, ValidateIf } from 'class-validator';
-import { CreateBenefitDto } from './create-benefit.dto';
+import { CreatePromotionDto } from './create-promotion.dto';
 
-export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
+export class UpdatePromotionDto extends PartialType(CreatePromotionDto) {
   @ApiProperty({ example: true })
   @IsBoolean()
   @ValidateIf(({ archived }) => archived !== undefined)

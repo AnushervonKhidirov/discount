@@ -36,7 +36,7 @@ Table companies {
   updatedAt DateTime [not null]
   user users [not null]
   category categories
-  benefits benefits [not null]
+  promotions promotions [not null]
   stores stores [not null]
   countries countries [not null]
 }
@@ -48,12 +48,12 @@ Table banks {
   archived Boolean [not null, default: false]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  benefits benefits [not null]
+  promotions promotions [not null]
 }
 
-Table benefits {
+Table promotions {
   id Int [pk, increment]
-  type BenefitType [not null]
+  type PromotionType [not null]
   size Int [not null]
   message String
   startAt DateTime [not null]
@@ -83,7 +83,7 @@ Table stores {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   company companies [not null]
-  benefits benefits [not null]
+  promotions promotions [not null]
   country countries [not null]
   city cities [not null]
 }
@@ -113,9 +113,9 @@ Table CompanyToCountry {
   companiesId Int [ref: > companies.id]
 }
 
-Table BenefitToStore {
+Table PromotionToStore {
   storesId Int [ref: > stores.id]
-  benefitsId Int [ref: > benefits.id]
+  promotionsId Int [ref: > promotions.id]
 }
 
 Enum Role {
@@ -124,7 +124,7 @@ Enum Role {
   SUPER_ADMIN
 }
 
-Enum BenefitType {
+Enum PromotionType {
   DISCOUNT
   CASHBACK
   PROMO_CODE
@@ -136,9 +136,9 @@ Ref: companies.userId > users.id [delete: Cascade]
 
 Ref: companies.categoryId > categories.id
 
-Ref: benefits.companyId > companies.id [delete: Cascade]
+Ref: promotions.companyId > companies.id [delete: Cascade]
 
-Ref: benefits.bankId > banks.id [delete: Cascade]
+Ref: promotions.bankId > banks.id [delete: Cascade]
 
 Ref: stores.companyId > companies.id [delete: Cascade]
 

@@ -12,13 +12,13 @@ import {
   IsArray,
 } from 'class-validator';
 import { $Enums } from '@prisma/client';
-import { BenefitTypeValidation } from '../validation/benefit-type.validation';
+import { PromotionTypeValidation } from '../validation/promotion-type.validation';
 
-export class CreateBenefitDto {
-  @ApiProperty({ example: $Enums.BenefitType.DISCOUNT })
-  @IsEnum($Enums.BenefitType)
-  @Validate(BenefitTypeValidation)
-  type: $Enums.BenefitType;
+export class CreatePromotionDto {
+  @ApiProperty({ example: $Enums.PromotionType.DISCOUNT })
+  @IsEnum($Enums.PromotionType)
+  @Validate(PromotionTypeValidation)
+  type: $Enums.PromotionType;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
@@ -57,11 +57,11 @@ export class CreateBenefitDto {
 
   @ApiProperty({ example: 1 })
   @IsNumber()
-  @ValidateIf(({ type }) => type === $Enums.BenefitType.CASHBACK)
+  @ValidateIf(({ type }) => type === $Enums.PromotionType.CASHBACK)
   bankId?: number;
 
   @ApiProperty({ example: 'PROMO_CODE' })
-  @ValidateIf(({ type }) => type === $Enums.BenefitType.PROMO_CODE)
+  @ValidateIf(({ type }) => type === $Enums.PromotionType.PROMO_CODE)
   @IsString()
   @IsNotEmpty()
   promoCode?: string;

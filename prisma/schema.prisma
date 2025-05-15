@@ -39,19 +39,19 @@ model Token {
 }
 
 model Company {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique @db.VarChar(50)
-  about      String?   @db.Text()
-  logoUrl    String?   @map("logo_url") @db.VarChar(255)
-  verified   Boolean   @default(false)
-  archived   Boolean   @default(false)
-  userId     Int       @map("user_id")
-  categoryId Int?      @map("category_id")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category   Category? @relation(fields: [categoryId], references: [id])
-  benefits   Benefit[]
+  id         Int         @id @default(autoincrement())
+  name       String      @unique @db.VarChar(50)
+  about      String?     @db.Text()
+  logoUrl    String?     @map("logo_url") @db.VarChar(255)
+  verified   Boolean     @default(false)
+  archived   Boolean     @default(false)
+  userId     Int         @map("user_id")
+  categoryId Int?        @map("category_id")
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  promotions Promotion[]
   stores     Store[]
   countries  Country[]
 
@@ -59,54 +59,54 @@ model Company {
 }
 
 model Bank {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique @db.VarChar(50)
-  logoUrl   String?   @map("logo_url") @db.VarChar(255)
-  archived  Boolean   @default(false)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  benefits  Benefit[]
+  id         Int         @id @default(autoincrement())
+  name       String      @unique @db.VarChar(50)
+  logoUrl    String?     @map("logo_url") @db.VarChar(255)
+  archived   Boolean     @default(false)
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  promotions Promotion[]
 
   @@map("banks")
 }
 
-model Benefit {
-  id        Int         @id @default(autoincrement())
-  type      BenefitType
-  size      Int         @db.TinyInt()
-  message   String?     @db.Text()
-  startAt   DateTime    @map("start_at") @db.DateTime()
-  endAt     DateTime    @map("end_at") @db.DateTime()
-  archived  Boolean     @default(false)
-  companyId Int         @map("company_id")
-  bankId    Int?        @map("bank_id")
-  promoCode String?     @map("promo_code") @db.VarChar(20)
-  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
-  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  bank      Bank?       @relation(fields: [bankId], references: [id], onDelete: Cascade)
+model Promotion {
+  id        Int           @id @default(autoincrement())
+  type      PromotionType
+  size      Int           @db.TinyInt()
+  message   String?       @db.Text()
+  startAt   DateTime      @map("start_at") @db.DateTime()
+  endAt     DateTime      @map("end_at") @db.DateTime()
+  archived  Boolean       @default(false)
+  companyId Int           @map("company_id")
+  bankId    Int?          @map("bank_id")
+  promoCode String?       @map("promo_code") @db.VarChar(20)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bank      Bank?         @relation(fields: [bankId], references: [id], onDelete: Cascade)
   stores    Store[]
 
-  @@map("benefits")
+  @@map("promotions")
 }
 
 model Store {
-  id        Int       @id @default(autoincrement())
-  companyId Int       @map("company_id")
-  countryId Int       @map("country_id")
-  cityId    Int       @map("city_id")
-  address   String
-  latitude  String
-  longitude String
-  openAt    String    @map("open_at") @db.VarChar(5)
-  closeAt   String    @map("close_at") @db.VarChar(5)
-  archived  Boolean   @default(false)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  benefits  Benefit[]
-  country   Country   @relation(fields: [countryId], references: [id])
-  city      City      @relation(fields: [cityId], references: [id])
+  id         Int         @id @default(autoincrement())
+  companyId  Int         @map("company_id")
+  countryId  Int         @map("country_id")
+  cityId     Int         @map("city_id")
+  address    String
+  latitude   String
+  longitude  String
+  openAt     String      @map("open_at") @db.VarChar(5)
+  closeAt    String      @map("close_at") @db.VarChar(5)
+  archived   Boolean     @default(false)
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  promotions Promotion[]
+  country    Country     @relation(fields: [countryId], references: [id])
+  city       City        @relation(fields: [cityId], references: [id])
 
   @@map("stores")
 }
@@ -143,7 +143,7 @@ enum Role {
   SUPER_ADMIN
 }
 
-enum BenefitType {
+enum PromotionType {
   DISCOUNT
   CASHBACK
   PROMO_CODE

@@ -1,6 +1,6 @@
 import type { Request } from 'express';
 import type { UserTokenPayload } from 'src/token/type/token.type';
-import type { BenefitQuery } from './type/benefit.type';
+import type { PromotionQuery } from './type/promotion.type';
 
 import {
   Controller,
@@ -19,11 +19,11 @@ import {
 import { ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CompanyService } from 'src/company/company.service';
-import { BenefitService } from './benefit.service';
-import { CreateBenefitDto } from './dto/create-benefit.dto';
-import { UpdateBenefitDto } from './dto/update-benefit.dto';
+import { PromotionService } from './promotion.service';
+import { CreatePromotionDto } from './dto/create-promotion.dto';
+import { UpdatePromotionDto } from './dto/update-promotion.dto';
 
-const benefit = {
+const promotion = {
   id: 2,
   type: 'DISCOUNT',
   size: 25,
@@ -81,75 +81,77 @@ const benefit = {
   bank: null,
 };
 
-@Controller('benefits')
-export class BenefitController {
+@Controller('promotions')
+export class PromotionController {
   constructor(
-    private readonly benefitService: BenefitService,
+    private readonly promotionService: PromotionService,
     private readonly companyService: CompanyService,
   ) {}
 
-  @ApiResponse({ example: [benefit] })
+  @ApiResponse({ example: [promotion] })
   @Get()
-  async findMany(@Query() { type, take, skip }: BenefitQuery) {
-    const [benefits, err] = await this.benefitService.findMany(
+  async findMany(@Query() { type, take, skip }: PromotionQuery) {
+    const [promotions, err] = await this.promotionService.findMany(
       { type },
       { take, skip },
     );
     if (err) throw err;
-    return benefits;
+    return promotions;
   }
 
-  @ApiResponse({ example: benefit })
+  @ApiResponse({ example: promotion })
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const [benefit, err] = await this.benefitService.findOne({ id });
+    const [promotion, err] = await this.promotionService.findOne({ id });
     if (err) throw err;
-    return benefit;
+    return promotion;
   }
 
-  @ApiResponse({ example: benefit })
+  @ApiResponse({ example: promotion })
   @UseGuards(AuthGuard)
   @Post()
   async create(
-    @Body(new ValidationPipe()) createBenefitDto: CreateBenefitDto,
+    @Body(new ValidationPipe()) createPromotionDto: CreatePromotionDto,
     @Req() request: Request,
   ) {
     const userPayload = this.getUserPayload(request);
 
     const [_, companyErr] = await this.companyService.findOne({
-      id: createBenefitDto.companyId,
+      id: createPromotionDto.companyId,
       userId: +userPayload.sub,
     });
 
     if (companyErr) throw companyErr;
 
-    const [benefit, err] = await this.benefitService.create(createBenefitDto);
+    const [promotion, err] =
+      await this.promotionService.create(createPromotionDto);
+
     if (err) throw err;
-    return benefit;
+    return promotion;
   }
-  @ApiResponse({ example: benefit })
+  @ApiResponse({ example: promotion })
   @UseGuards(AuthGuard)
   @Patch()
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) updateBenefitDto: UpdateBenefitDto,
+    @Body(new ValidationPipe()) updatePromotionDto: UpdatePromotionDto,
     @Req() request: Request,
   ) {
     const userPayload = this.getUserPayload(request);
 
-    const [benefit, err] = await this.benefitService.update(
+    const [promotion, err] = await this.promotionService.update(
       {
         id,
         company: { userId: +userPayload },
       },
-      updateBenefitDto,
+      updatePromotionDto,
     );
 
     if (err) throw err;
-    return benefit;
+    return promotion;
   }
 
-  @ApiResponse({ example: benefit })
+  @ApiResponse({ example: promotion })
   @UseGuards(AuthGuard)
   @Patch()
   async archive(
@@ -158,16 +160,16 @@ export class BenefitController {
   ) {
     const userPayload = this.getUserPayload(request);
 
-    const [benefit, err] = await this.benefitService.archive({
+    const [promotion, err] = await this.promotionService.archive({
       id,
       company: { userId: +userPayload },
     });
 
     if (err) throw err;
-    return benefit;
+    return promotion;
   }
 
-  @ApiResponse({ example: benefit })
+  @ApiResponse({ example: promotion })
   @UseGuards(AuthGuard)
   @Patch()
   async unarchive(
@@ -176,13 +178,13 @@ export class BenefitController {
   ) {
     const userPayload = this.getUserPayload(request);
 
-    const [benefit, err] = await this.benefitService.unarchive({
+    const [promotion, err] = await this.promotionService.unarchive({
       id,
       company: { userId: +userPayload },
     });
 
     if (err) throw err;
-    return benefit;
+    return promotion;
   }
 
   private getUserPayload(request: Request): UserTokenPayload {

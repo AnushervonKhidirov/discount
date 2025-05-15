@@ -57,7 +57,7 @@ const storeData = [
       createdAt: '2025-05-14T05:55:32.000Z',
       updatedAt: '2025-05-14T05:55:32.000Z',
     },
-    benefits: [],
+    promotions: [],
   },
 ];
 

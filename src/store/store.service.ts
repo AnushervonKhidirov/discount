@@ -15,7 +15,7 @@ export class StoreService {
     city: true,
     country: true,
     company: true,
-    benefits: true,
+    promotions: true,
   };
 
   constructor(private readonly prisma: PrismaService) {}
