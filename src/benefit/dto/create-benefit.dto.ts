@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNumber,
   IsString,
@@ -41,12 +41,18 @@ export class CreateBenefitDto {
   @ValidateIf(({ message }) => message !== undefined)
   message?: string;
 
-  @ApiProperty({ example: '' })
-  @IsDate()
+  @ApiProperty({
+    example: '2025-05-15T10:49:57.166Z',
+    description: 'Date in ISO String format',
+  })
+  @IsDateString()
   startAt: Date;
 
-  @ApiProperty({ example: '' })
-  @IsDate()
+  @ApiProperty({
+    example: '2025-05-15T10:49:57.166Z',
+    description: 'Date in ISO String format',
+  })
+  @IsDateString()
   endAt: Date;
 
   @ApiProperty({ example: 1 })
