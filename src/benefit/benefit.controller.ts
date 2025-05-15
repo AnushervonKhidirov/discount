@@ -1,5 +1,6 @@
 import type { Request } from 'express';
 import type { UserTokenPayload } from 'src/token/type/token.type';
+import type { BenefitQuery } from './type/benefit.type';
 
 import {
   Controller,
@@ -7,6 +8,7 @@ import {
   Post,
   Patch,
   Param,
+  Query,
   Body,
   Req,
   ParseIntPipe,
@@ -88,8 +90,11 @@ export class BenefitController {
 
   @ApiResponse({ example: [benefit] })
   @Get()
-  async findMany() {
-    const [benefits, err] = await this.benefitService.findMany();
+  async findMany(@Query() { type, take, skip }: BenefitQuery) {
+    const [benefits, err] = await this.benefitService.findMany(
+      { type },
+      { take, skip },
+    );
     if (err) throw err;
     return benefits;
   }

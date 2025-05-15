@@ -1,5 +1,6 @@
 import type { Benefit } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
+import type { BenefitQuery } from './type/benefit.type';
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -36,10 +37,13 @@ export class BenefitService {
 
   async findMany(
     where?: Prisma.BenefitWhereInput,
+    paginationParams?: Omit<BenefitQuery, 'type'>,
   ): ReturnPromiseWithErr<Benefit[]> {
     try {
       const benefits = await this.prisma.benefit.findMany({
         where,
+        take: paginationParams?.take,
+        skip: paginationParams?.skip,
         include: this.include,
       });
       return [benefits, null];
