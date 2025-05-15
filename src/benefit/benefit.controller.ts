@@ -21,7 +21,63 @@ import { BenefitService } from './benefit.service';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
 
-const benefit = {};
+const benefit = {
+  id: 2,
+  type: 'DISCOUNT',
+  size: 25,
+  message: null,
+  startAt: '2025-05-15T00:00:01.000Z',
+  endAt: '2025-05-25T00:00:00.000Z',
+  archived: false,
+  companyId: 28,
+  bankId: null,
+  promoCode: null,
+  createdAt: '2025-05-15T10:49:46.000Z',
+  updatedAt: '2025-05-15T10:49:46.000Z',
+  company: {
+    id: 28,
+    name: 'Defacto',
+    about: 'about Defacto store',
+    logoUrl: null,
+    verified: false,
+    archived: false,
+    userId: 3,
+    categoryId: null,
+    createdAt: '2025-05-15T10:14:46.000Z',
+    updatedAt: '2025-05-15T10:14:46.000Z',
+  },
+  stores: [
+    {
+      id: 3,
+      companyId: 28,
+      countryId: 1,
+      cityId: 1,
+      address: 'Rudaki Avenue 77',
+      latitude: '38.578805',
+      longitude: '68.786370',
+      openAt: '08:00',
+      closeAt: '18:00',
+      archived: false,
+      createdAt: '2025-05-15T10:16:58.000Z',
+      updatedAt: '2025-05-15T10:16:58.000Z',
+    },
+    {
+      id: 4,
+      companyId: 28,
+      countryId: 1,
+      cityId: 1,
+      address: 'Sadriddin Ayni Street 55',
+      latitude: '38.563287',
+      longitude: '68.808445',
+      openAt: '08:00',
+      closeAt: '18:00',
+      archived: false,
+      createdAt: '2025-05-15T10:19:18.000Z',
+      updatedAt: '2025-05-15T10:19:18.000Z',
+    },
+  ],
+  bank: null,
+};
 
 @Controller('benefits')
 export class BenefitController {
