@@ -1,6 +1,5 @@
 import type { Promotion } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
-import type { PromotionQuery } from './type/promotion.type';
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -37,13 +36,14 @@ export class PromotionService {
 
   async findMany(
     where?: Prisma.PromotionWhereInput,
-    paginationParams?: Omit<PromotionQuery, 'type'>,
+    params?: Pick<Prisma.PromotionFindManyArgs, 'take' | 'skip' | 'orderBy'>,
   ): ReturnPromiseWithErr<Promotion[]> {
     try {
       const promotions = await this.prisma.promotion.findMany({
         where,
-        take: paginationParams?.take,
-        skip: paginationParams?.skip,
+        take: params?.take,
+        skip: params?.skip,
+        orderBy: params?.orderBy,
         include: this.include,
       });
       return [promotions, null];

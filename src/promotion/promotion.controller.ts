@@ -1,6 +1,5 @@
 import type { Request } from 'express';
 import type { UserTokenPayload } from 'src/token/type/token.type';
-import type { PromotionQuery } from './type/promotion.type';
 
 import {
   Controller,
@@ -15,6 +14,7 @@ import {
   ValidationPipe,
   UseGuards,
   UnauthorizedException,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -22,6 +22,7 @@ import { CompanyService } from 'src/company/company.service';
 import { PromotionService } from './promotion.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
+import { $Enums } from '@prisma/client';
 
 const promotion = {
   id: 2,
@@ -90,7 +91,12 @@ export class PromotionController {
 
   @ApiResponse({ example: [promotion] })
   @Get()
-  async findMany(@Query() { type, take, skip }: PromotionQuery) {
+  async findMany(
+    @Query('take', new ParseIntPipe({ optional: true })) take?: number,
+    @Query('skip', new ParseIntPipe({ optional: true })) skip?: number,
+    @Query('type', new ParseEnumPipe($Enums.PromotionType, { optional: true }))
+    type?: $Enums.PromotionType,
+  ) {
     const [promotions, err] = await this.promotionService.findMany(
       { type },
       { take, skip },
