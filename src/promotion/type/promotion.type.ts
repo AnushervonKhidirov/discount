@@ -1,12 +1,6 @@
 // NOTE: Still not used
 import { Promotion, $Enums } from '@prisma/client';
 
-export type PromotionQuery = Partial<{
-  type: Promotion['type'];
-  skip: number;
-  take: number;
-}>;
-
 export type Discount = Omit<Promotion, 'bankId' | 'promoCode'>;
 export type Cashback = Omit<Promotion, 'promoCode'> & { bankId: number };
 export type PromoCode = Omit<Promotion, 'bankId'> & { promoCode: string };
