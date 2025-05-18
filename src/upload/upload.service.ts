@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 
 import { exceptionHandler } from '@helper/exception.helper';
 
-const validMimeTypes = ['image/png', 'image/jpg', 'image.jpeg'];
+const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 const uploadPath = join(process.cwd(), 'uploads');
 
 @Injectable()
