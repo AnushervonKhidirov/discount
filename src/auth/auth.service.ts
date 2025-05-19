@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { User } from '@prisma/client';
 import type { ReturnPromiseWithErr } from '@type/return-with-error.type';
 import type { Tokens, UserTokenPayload } from 'src/token/type/token.type';
@@ -76,7 +75,8 @@ export class AuthService {
 
   async signOut({ refreshToken }: SignOutDto): Promise<void | HttpException> {
     try {
-      const [_, tokenErr] = this.tokenService.verifyRefreshToken(refreshToken);
+      const [_, tokenErr] =
+        await this.tokenService.verifyRefreshToken(refreshToken);
       if (tokenErr) throw tokenErr;
 
       const [__, deleteErr] = await this.tokenService.delete(refreshToken);
@@ -92,15 +92,12 @@ export class AuthService {
     refreshToken,
   }: SignOutDto): Promise<void | HttpException> {
     try {
-      const [token, err] = this.tokenService.verifyRefreshToken(refreshToken);
+      const [token, err] =
+        await this.tokenService.verifyRefreshToken(refreshToken);
       if (err) throw err;
-
-      if (!token.sub || !token.username || !token.role)
-        throw new Error('Invalid token payload');
 
       const userData = {
         id: +token.sub,
-        username: token.username,
         role: token.role,
       };
 
@@ -119,7 +116,9 @@ export class AuthService {
     refreshToken,
   }: RefreshTokenDto): ReturnPromiseWithErr<Tokens> {
     try {
-      const [_, verifyErr] = this.tokenService.verifyRefreshToken(refreshToken);
+      const [_, verifyErr] =
+        await this.tokenService.verifyRefreshToken(refreshToken);
+
       if (verifyErr) throw verifyErr;
 
       const [deletedToken, deleteErr] =
@@ -139,8 +138,7 @@ export class AuthService {
     user: Omit<User, 'password'>,
   ): ReturnPromiseWithErr<Tokens> {
     const payload: UserTokenPayload = {
-      sub: user.id.toString(),
-      username: user.username,
+      sub: user.id,
       role: user.role,
     };
 

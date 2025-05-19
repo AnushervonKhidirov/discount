@@ -6,7 +6,6 @@ export type Tokens = {
 };
 
 export type UserTokenPayload = {
-  sub: string;
-  username: string;
+  sub: number;
   role: $Enums.Role;
 };

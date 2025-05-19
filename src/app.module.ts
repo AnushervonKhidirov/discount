@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -18,6 +19,11 @@ import { CategoryModule } from './category/category.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.ACCESS_TOKEN_SECRET,
+      signOptions: { expiresIn: '10m' },
+    }),
     ScheduleModule.forRoot(),
     ScheduledTasksModule,
     PrismaModule,

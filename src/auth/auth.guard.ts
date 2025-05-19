@@ -1,4 +1,4 @@
-import type { Observable } from 'rxjs';
+import type { Request } from 'express';
 
 import {
   CanActivate,
@@ -13,20 +13,20 @@ import { TokenService } from 'src/token/token.service';
 export class AuthGuard implements CanActivate {
   constructor(private readonly tokenService: TokenService) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const authorization: string | undefined = request.headers['authorization'];
+    const token = this.extractTokenFromHeader(request);
+    if (!token) throw new UnauthorizedException();
 
-    if (!authorization) throw new UnauthorizedException();
-
-    const token = authorization.split(' ')[1];
-    const [userPayload, err] = this.tokenService.verifyAccessToken(token);
-    if (err) throw new UnauthorizedException();
+    const [userPayload, err] = await this.tokenService.verifyAccessToken(token);
+    if (err) throw err;
 
     request['user'] = userPayload;
-
     return true;
+  }
+
+  private extractTokenFromHeader(request: Request) {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

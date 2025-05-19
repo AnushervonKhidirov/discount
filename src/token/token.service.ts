@@ -1,32 +1,30 @@
-import type { JwtPayload } from 'jsonwebtoken';
 import type { Prisma, User, Token as UserToken } from '@prisma/client';
-import type { Tokens } from './type/token.type';
+import type { Tokens, UserTokenPayload } from './type/token.type';
 import type {
   ReturnWithErr,
   ReturnPromiseWithErr,
 } from '@type/return-with-error.type';
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { sign, verify } from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { exceptionHandler } from '@helper/exception.helper';
 
 @Injectable()
 export class TokenService {
-  private readonly accessKey = process.env.ACCESS_TOKEN_SECRET;
-  private readonly refreshKey = process.env.REFRESH_TOKEN_SECRET;
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  constructor(private readonly prisma: PrismaService) {}
-
-  generate(payload: JwtPayload): ReturnWithErr<Tokens> {
+  generate(payload: UserTokenPayload): ReturnWithErr<Tokens> {
     try {
-      if (!this.accessKey || !this.refreshKey) {
-        throw new Error('Access/Refresh token keys not found');
-      }
-
-      const accessToken = sign(payload, this.accessKey, { expiresIn: '10m' });
-      const refreshToken = sign(payload, this.refreshKey, { expiresIn: '10h' });
+      const accessToken = this.jwtService.sign(payload);
+      const refreshToken = this.jwtService.sign(payload, {
+        secret: process.env.REFRESH_TOKEN_SECRET,
+        expiresIn: '10h',
+      });
 
       return [{ accessToken, refreshToken }, null];
     } catch (err) {
@@ -84,33 +82,43 @@ export class TokenService {
     return [tokens, null];
   }
 
-  verifyAccessToken(accessToken: string): ReturnWithErr<JwtPayload> {
+  async verifyAccessToken(
+    accessToken: string,
+  ): ReturnPromiseWithErr<UserTokenPayload> {
     try {
-      if (!this.accessKey) throw new Error('Access token key not found');
-      const userPayload = verify(accessToken, this.accessKey);
-
-      if (typeof userPayload === 'string') {
-        throw new UnauthorizedException('Invalid token');
-      }
-
-      return [userPayload, null];
+      const token =
+        await this.jwtService.verifyAsync<UserTokenPayload>(accessToken);
+      return [token, null];
     } catch (err) {
-      return exceptionHandler(err);
+      return exceptionHandler(this.tokenErrorsToHttpException(err));
     }
   }
 
-  verifyRefreshToken(refreshToken: string): ReturnWithErr<JwtPayload> {
+  async verifyRefreshToken(
+    refreshToken: string,
+  ): ReturnPromiseWithErr<UserTokenPayload> {
     try {
-      if (!this.refreshKey) throw new Error('Refresh token key not found');
-      const userPayload = verify(refreshToken, this.refreshKey);
+      const token = await this.jwtService.verifyAsync<UserTokenPayload>(
+        refreshToken,
+        {
+          secret: process.env.REFRESH_TOKEN_SECRET,
+        },
+      );
 
-      if (typeof userPayload === 'string') {
-        throw new UnauthorizedException('Invalid token');
-      }
-
-      return [userPayload, null];
+      return [token, null];
     } catch (err) {
-      return exceptionHandler(err);
+      return exceptionHandler(this.tokenErrorsToHttpException(err));
     }
+  }
+
+  private tokenErrorsToHttpException(err: any) {
+    const errMessages = {
+      'invalid token': 'Invalid token',
+      'jwt expired': 'Token expired',
+    };
+
+    return err.message in errMessages
+      ? new UnauthorizedException(errMessages[err.message])
+      : err;
   }
 }
