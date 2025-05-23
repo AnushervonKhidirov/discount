@@ -113,12 +113,12 @@ export class TokenService {
 
   private tokenErrorsToHttpException(err: any) {
     const errMessages = {
+      'invalid signature': 'Invalid signature',
       'invalid token': 'Invalid token',
       'jwt expired': 'Token expired',
     };
 
-    return err.message in errMessages
-      ? new UnauthorizedException(errMessages[err.message])
-      : err;
+    const message = <string>errMessages[err.message] ?? 'Invalid token';
+    return new UnauthorizedException(message);
   }
 }
