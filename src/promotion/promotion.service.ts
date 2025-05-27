@@ -12,9 +12,11 @@ import { exceptionHandler } from '@helper/exception.helper';
 @Injectable()
 export class PromotionService {
   private readonly include: Prisma.PromotionDefaultArgs['include'] = {
-    company: true,
-    stores: true,
-    bank: true,
+    company: {
+      include: { category: true },
+    },
+    stores: { omit: { createdAt: true, updatedAt: true } },
+    bank: { omit: { createdAt: true, updatedAt: true } },
   };
 
   constructor(private readonly prisma: PrismaService) {}
