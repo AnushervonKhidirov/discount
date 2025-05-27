@@ -46,11 +46,13 @@ model Company {
   verified   Boolean     @default(false)
   archived   Boolean     @default(false)
   userId     Int         @map("user_id")
-  categoryId Int?        @map("category_id")
+  rating     Float       @default(0)
+  review     Int         @default(0)
+  categoryId Int         @map("category_id")
   createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt  DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category   Category?   @relation(fields: [categoryId], references: [id])
+  category   Category    @relation(fields: [categoryId], references: [id])
   promotions Promotion[]
   stores     Store[]
   countries  Country[]

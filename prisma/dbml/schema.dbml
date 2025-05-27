@@ -31,11 +31,13 @@ Table companies {
   verified Boolean [not null, default: false]
   archived Boolean [not null, default: false]
   userId Int [not null]
-  categoryId Int
+  rating Float [not null, default: 0]
+  review Int [not null, default: 0]
+  categoryId Int [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   user users [not null]
-  category categories
+  category categories [not null]
   promotions promotions [not null]
   stores stores [not null]
   countries countries [not null]

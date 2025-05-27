@@ -19,14 +19,14 @@ export class CreateCompanyDto {
   @IsNotEmpty()
   countryIds: number[];
 
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @ValidateIf(({ categoryId }) => categoryId !== undefined)
+  categoryId: number;
+
   @ApiProperty({ example: 'Defacto store with high quality brand clothes!' })
   @IsString()
   @IsNotEmpty()
   @ValidateIf(({ about }) => about !== undefined)
   about?: string;
-
-  @ApiProperty({ example: 1 })
-  @IsNumber()
-  @ValidateIf(({ categoryId }) => categoryId !== undefined)
-  categoryId?: number;
 }
