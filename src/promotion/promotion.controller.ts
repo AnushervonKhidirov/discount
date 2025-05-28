@@ -14,7 +14,6 @@ import {
   ValidationPipe,
   UseGuards,
   UnauthorizedException,
-  ParseEnumPipe,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -22,21 +21,21 @@ import { CompanyService } from 'src/company/company.service';
 import { PromotionService } from './promotion.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
-import { $Enums } from '@prisma/client';
+import { FindManyPromotionDto } from './dto/find-many-promotion.dto';
 
 const promotion = {
   id: 2,
   type: 'DISCOUNT',
   size: 25,
   message: null,
-  startAt: '2025-05-15T00:00:01.000Z',
-  endAt: '2025-05-25T00:00:00.000Z',
+  startAt: '2025-05-16T00:00:00.000Z',
+  endAt: '2025-05-20T00:00:00.000Z',
   archived: false,
   companyId: 28,
   bankId: null,
   promoCode: null,
-  createdAt: '2025-05-15T10:49:46.000Z',
-  updatedAt: '2025-05-15T10:49:46.000Z',
+  createdAt: '2025-05-16T00:00:00.000Z',
+  updatedAt: '2025-05-16T00:00:00.000Z',
   company: {
     id: 28,
     name: 'Defacto',
@@ -46,8 +45,6 @@ const promotion = {
     archived: false,
     userId: 3,
     categoryId: null,
-    createdAt: '2025-05-15T10:14:46.000Z',
-    updatedAt: '2025-05-15T10:14:46.000Z',
   },
   stores: [
     {
@@ -61,8 +58,6 @@ const promotion = {
       openAt: '08:00',
       closeAt: '18:00',
       archived: false,
-      createdAt: '2025-05-15T10:16:58.000Z',
-      updatedAt: '2025-05-15T10:16:58.000Z',
     },
     {
       id: 4,
@@ -75,8 +70,6 @@ const promotion = {
       openAt: '08:00',
       closeAt: '18:00',
       archived: false,
-      createdAt: '2025-05-15T10:19:18.000Z',
-      updatedAt: '2025-05-15T10:19:18.000Z',
     },
   ],
   bank: null,
@@ -92,14 +85,20 @@ export class PromotionController {
   @ApiResponse({ example: [promotion] })
   @Get()
   async findMany(
-    @Query('take', new ParseIntPipe({ optional: true })) take?: number,
-    @Query('skip', new ParseIntPipe({ optional: true })) skip?: number,
-    @Query('type', new ParseEnumPipe($Enums.PromotionType, { optional: true }))
-    type?: $Enums.PromotionType,
+    @Query(new ValidationPipe({ transform: true })) query: FindManyPromotionDto,
   ) {
+    if (query.type !== 'CASHBACK') query.bankId = undefined;
+
     const [promotions, err] = await this.promotionService.findMany(
-      { type },
-      { take, skip },
+      {
+        type: query.type,
+        bankId: query.bankId,
+        size: { gte: query.size },
+        startAt: { gte: query.startAt },
+        endAt: { lte: query.endAt },
+        company: { categoryId: query.categoryId },
+      },
+      { take: query.take, skip: query.skip },
     );
     if (err) throw err;
     return promotions;

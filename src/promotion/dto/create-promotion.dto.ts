@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
+  IsDate,
   IsEnum,
   IsNumber,
   IsString,
-  Max,
+  IsArray,
+  IsNotEmpty,
   Min,
+  Max,
   ValidateIf,
   Validate,
-  IsNotEmpty,
-  IsArray,
 } from 'class-validator';
 import { $Enums } from '@prisma/client';
 import { PromotionTypeValidation } from '../validation/promotion-type.validation';
@@ -41,18 +42,14 @@ export class CreatePromotionDto {
   @ValidateIf(({ message }) => message !== undefined)
   message?: string;
 
-  @ApiProperty({
-    example: '2025-05-15T10:49:57.166Z',
-    description: 'Date in ISO String format',
-  })
-  @IsDateString()
+  @ApiProperty({ example: '2025-05-15', description: 'Format: YYYY-MM-dd' })
+  @IsDate()
+  @Type(() => Date)
   startAt: Date;
 
-  @ApiProperty({
-    example: '2025-05-15T10:49:57.166Z',
-    description: 'Date in ISO String format',
-  })
-  @IsDateString()
+  @ApiProperty({ example: '2025-05-15', description: 'Format: YYYY-MM-dd' })
+  @IsDate()
+  @Type(() => Date)
   endAt: Date;
 
   @ApiProperty({ example: 1 })

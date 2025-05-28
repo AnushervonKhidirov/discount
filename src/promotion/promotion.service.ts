@@ -14,6 +14,7 @@ export class PromotionService {
   private readonly include: Prisma.PromotionDefaultArgs['include'] = {
     company: {
       include: { category: true },
+      omit: { createdAt: true, updatedAt: true }
     },
     stores: { omit: { createdAt: true, updatedAt: true } },
     bank: { omit: { createdAt: true, updatedAt: true } },

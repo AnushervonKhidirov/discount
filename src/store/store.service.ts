@@ -14,8 +14,8 @@ export class StoreService {
   private readonly include: Prisma.StoreDefaultArgs['include'] = {
     city: true,
     country: true,
-    company: true,
-    promotions: true,
+    company: { omit: { createdAt: true, updatedAt: true } },
+    promotions: { omit: { createdAt: true, updatedAt: true } },
   };
 
   constructor(private readonly prisma: PrismaService) {}
