@@ -22,42 +22,40 @@ import { CompanyService } from 'src/company/company.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 
-const storeData = [
-  {
+const storeData = {
+  id: 1,
+  companyId: 27,
+  countryId: 1,
+  cityId: 1,
+  address: 'Ayni street 48',
+  latitude: '21.23',
+  longitude: '21.23',
+  openAt: '08:00',
+  closeAt: '18:00',
+  archived: false,
+  createdAt: '2025-05-14T08:18:59.000Z',
+  updatedAt: '2025-05-14T08:18:59.000Z',
+  city: {
     id: 1,
-    companyId: 27,
     countryId: 1,
-    cityId: 1,
-    address: 'Ayni street 48',
-    latitude: '21.23',
-    longitude: '21.23',
-    openAt: '08:00',
-    closeAt: '18:00',
-    archived: false,
-    createdAt: '2025-05-14T08:18:59.000Z',
-    updatedAt: '2025-05-14T08:18:59.000Z',
-    city: {
-      id: 1,
-      countryId: 1,
-      value: 'Dushanbe',
-    },
-    country: {
-      id: 1,
-      value: 'Tajikistan',
-    },
-    company: {
-      id: 27,
-      name: 'Gelos',
-      about: 'Gelos about',
-      logoUrl: null,
-      verified: false,
-      archived: false,
-      userId: 1,
-      categoryId: null,
-    },
-    promotions: [],
+    value: 'Dushanbe',
   },
-];
+  country: {
+    id: 1,
+    value: 'Tajikistan',
+  },
+  company: {
+    id: 27,
+    name: 'Gelos',
+    about: 'Gelos about',
+    logoUrl: null,
+    verified: false,
+    archived: false,
+    userId: 1,
+    categoryId: null,
+  },
+  promotions: [],
+};
 
 @Controller('stores')
 export class StoreController {
