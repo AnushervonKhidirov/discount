@@ -145,7 +145,7 @@ export class CompanyController {
 
     const [company, err] = await this.companyService.uploadLogo(
       { id, userId: +userPayload.sub },
-      file.filename,
+      `${UploadPath.Logo}/${file.filename}`,
     );
 
     if (err) throw err;
