@@ -20,7 +20,6 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUnique({
         where,
-        include: { companies: true },
         omit: { password: !withPassword },
       });
 
