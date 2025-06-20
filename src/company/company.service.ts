@@ -30,14 +30,10 @@ export class CompanyService {
 
   async findMany(
     where?: Prisma.CompanyWhereInput,
-    params?: Pick<Prisma.CompanyFindManyArgs, 'take' | 'skip' | 'orderBy'>,
   ): ReturnPromiseWithErr<Company[]> {
     try {
       const companies = await this.prisma.company.findMany({
         where,
-        skip: params?.skip,
-        take: params?.take,
-        orderBy: params?.orderBy,
         include: { category: true, countries: true },
       });
       return [companies, null];

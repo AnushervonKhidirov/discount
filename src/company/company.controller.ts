@@ -8,7 +8,6 @@ import {
   Patch,
   Param,
   Body,
-  Query,
   Req,
   ParseIntPipe,
   ValidationPipe,
@@ -25,7 +24,6 @@ import { UploadService } from 'src/upload/upload.service';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { FindManyPromotionDto } from './dto/find-many-companies.dto';
 
 import { UploadPath } from 'src/common/constant/upload';
 
@@ -52,16 +50,8 @@ export class CompanyController {
 
   @ApiResponse({ example: [companyData] })
   @Get()
-  async findMany(
-    @Query(new ValidationPipe({ transform: true })) query: FindManyPromotionDto,
-  ) {
-    const [companies, err] = await this.companyService.findMany(
-      {
-        userId: query.userId,
-        categoryId: query.categoryId,
-      },
-      { take: query.take, skip: query.skip },
-    );
+  async findMany() {
+    const [companies, err] = await this.companyService.findMany();
     if (err) throw err;
     return companies;
   }
