@@ -47,7 +47,7 @@ export class CompanyService {
     { name, about, categoryId, countryIds }: CreateCompanyDto,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const companies = await this.prisma.company.create({
+      const company = await this.prisma.company.create({
         data: {
           name,
           about,
@@ -58,7 +58,7 @@ export class CompanyService {
         include: { category: true, countries: true },
       });
 
-      return [companies, null];
+      return [company, null];
     } catch (err) {
       return exceptionHandler(err);
     }
@@ -120,11 +120,11 @@ export class CompanyService {
     where: Prisma.CompanyWhereUniqueInput,
   ): ReturnPromiseWithErr<Company> {
     try {
-      const companies = await this.prisma.company.delete({
+      const company = await this.prisma.company.delete({
         where,
         include: { category: true, countries: true },
       });
-      return [companies, null];
+      return [company, null];
     } catch (err) {
       return exceptionHandler(err);
     }
